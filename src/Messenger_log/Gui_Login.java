@@ -5,20 +5,20 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- *	·Î±×ÀÎ È­¸é JDialog
+ *	ë¡œê·¸ì¸ í™”ë©´ JDialog
  */
 class Window_Login extends JDialog{
 	
-//	ÄÄÆ÷³ÍÆ®¸¦ ¹èÄ¡ÇÒ ¿µ¿ªÀ» JPanel·Î ±¸Çö
+//	ì»´í¬ë„ŒíŠ¸ë¥¼ ë°°ì¹˜í•  ì˜ì—­ì„ JPanelë¡œ êµ¬í˜„
 	private JPanel con = new JPanel();
 	
 	
-	private JLabel logLabel = new JLabel("¸Þ½ÅÀú ·Î±×ÀÎ", JLabel.CENTER); 
+	private JLabel logLabel = new JLabel("ë©”ì‹ ì € ë¡œê·¸ì¸", JLabel.CENTER); 
 	private JTextField idFiled = new JTextField();	//ID
-	private JTextField pwFiled = new JPasswordField();	//ºñ¹Ð¹øÈ£
-	private JButton btLogin = new JButton("·Î±×ÀÎ");
-	private JButton btCancel = new JButton("Ãë¼Ò");
-	private JButton btJoin = new JButton("È¸¿ø°¡ÀÔ");
+	private JTextField pwFiled = new JPasswordField();	//ë¹„ë°€ë²ˆí˜¸
+	private JButton btLogin = new JButton("ë¡œê·¸ì¸");
+	private JButton btCancel = new JButton("ì·¨ì†Œ");
+	private JButton btJoin = new JButton("íšŒì›ê°€ìž…");
 
 	
 	
@@ -27,17 +27,16 @@ class Window_Login extends JDialog{
 		this.event();
 		this.menu();
 		
-		this.setTitle("LogIn È­¸é");
 		this.setLocationByPlatform(true);
 		this.setSize(400, 400);
 		this.setResizable(false);
 		this.setVisible(true);
 	}
 	/**
-	 * È­¸é ±¸Çö ¸Þ¼Òµå
+	 * í™”ë©´ êµ¬í˜„ ë©”ì†Œë“œ
 	 */
 	public void display() {
-		this.setContentPane(con);//conÀ» Component ¼³Á¤ ¿µ¿ªÀ¸·Î µî·Ï
+		this.setContentPane(con);//conì„ Component ì„¤ì • ì˜ì—­ìœ¼ë¡œ ë“±ë¡
 		this.setLayout(null);
 		
 		con.add(logLabel);
@@ -62,13 +61,13 @@ class Window_Login extends JDialog{
 	}
 	
 	/**
-	 * ÀÌº¥Æ® ¼³Á¤ ¸Þ¼Òµå
+	 * ì´ë²¤íŠ¸ ì„¤ì • ë©”ì†Œë“œ
 	 */
 	public void event() {
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);//x´©¸£¸é Ã¢ ¼Ò¸ê
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);//xëˆ„ë¥´ë©´ ì°½ ì†Œë©¸
 		
 		/**
-		 * ¹öÆ° ÀÌº¥Æ® (¹Ì±¸Çö)
+		 * ë²„íŠ¼ ì´ë²¤íŠ¸ (ë¯¸êµ¬í˜„)
 		 */
 		btCancel.addActionListener(e->{});
 		btLogin.addActionListener(e->{});
@@ -76,7 +75,8 @@ class Window_Login extends JDialog{
 	}
 	
 	/**
-	 * ¸Þ´º ±¸Çö ¸Þ¼Òµå (¹Ì±¸Çö)
+
+	 * ë©”ë‰´ êµ¬í˜„ ë©”ì†Œë“œ (ë¯¸êµ¬í˜„)
 	 */
 	public void menu() {
 	}
