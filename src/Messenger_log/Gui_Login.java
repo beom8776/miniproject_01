@@ -14,7 +14,7 @@ class Window_Login extends JDialog{
 	
 	
 	private JLabel logLabel = new JLabel("메신저 로그인", JLabel.CENTER); 
-	private JTextField idFiled = new JTextField();				//ID
+	private JTextField idFiled = new JTextField();	//ID
 	private JTextField pwFiled = new JPasswordField();	//비밀번호
 	private JButton btLogin = new JButton("로그인");
 	private JButton btCancel = new JButton("취소");
@@ -27,7 +27,6 @@ class Window_Login extends JDialog{
 		this.event();
 		this.menu();
 		
-		this.setTitle("LogIn 화면");
 		this.setLocationByPlatform(true);
 		this.setSize(400, 400);
 		this.setResizable(false);
@@ -76,6 +75,7 @@ class Window_Login extends JDialog{
 	}
 	
 	/**
+
 	 * 메뉴 구현 메소드 (미구현)
 	 */
 	public void menu() {
