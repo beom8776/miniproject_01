@@ -5,7 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- *	Swing에서 사용하는 Frame : JFrame 
+ *	메신저 리스트 Test 입니다.
  */
 class Window01 extends JFrame{
 	
