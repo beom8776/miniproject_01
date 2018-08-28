@@ -12,7 +12,6 @@ class Add extends JFrame{
 //	컴포넌트를 배치할 영역을 JPanel로 구현
 	private JPanel con = new JPanel();
 	
-	
 	private JLabel titlelb = new JLabel("친구찾기", JLabel.CENTER);
 	private JTextField searchTf = new JTextField();
 	private JButton searchBt = new JButton("찾기");
@@ -22,13 +21,13 @@ class Add extends JFrame{
 		this.display();
 		this.event();
 		this.menu();
-		
-		this.setTitle("Swing 예제");
-//		this.setLocation(100, 100);
+			
+		this.setTitle("친구찾기");
+		this.setLocation(100, 100);
 		this.setLocationByPlatform(true);
 		this.setSize(400, 400);
 		this.setResizable(false);
-		this.setVisible(true);
+		this.setVisible(false);
 	}
 	/**
 	 * 화면 구현 메소드
@@ -56,7 +55,7 @@ class Add extends JFrame{
 	 * 이벤트 설정 메소드
 	 */
 	public void event() {
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);//x누르면 창 소멸
+		this.setDefaultCloseOperation(HIDE_ON_CLOSE);//x누르면 창 소멸
 		
 //		찾기버튼 기능
 		searchBt.addActionListener(e->{});
