@@ -7,7 +7,7 @@ import javax.swing.*;
 /**
  *	메신저 리스트 Test 입니다.
  */
-class Window01 extends JFrame{
+class List extends JFrame{
 	
 //	컴포넌트를 배치할 영역을 JPanel로 구현
 	private JPanel con = new JPanel();
@@ -20,12 +20,14 @@ class Window01 extends JFrame{
 	private JLabel picture = new JLabel("사진");
 	private JLabel ststus = new JLabel("상태정보");
 	
-	public Window01() {
+	
+	
+	public List() {
 		this.display();
 		this.event();
 		this.menu();
 		
-		this.setTitle("Swing 예제");
+		this.setTitle("Java Messenger");
 //		this.setLocation(100, 100);
 		this.setLocationByPlatform(true);
 		this.setSize(400, 800);
@@ -72,7 +74,15 @@ class Window01 extends JFrame{
 	 * 이벤트 설정 메소드
 	 */
 	public void event() {
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);//x누르면 창 소멸
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);//x누르면 창 소멸
+		WindowListener closer = new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int close = JOptionPane.showConfirmDialog(con, "종료하시겠습니까?", "종료", JOptionPane.YES_NO_OPTION);
+				if(close == 0) System.exit(0);
+			}
+		};
+		this.addWindowListener(closer);
 		
 		friendList.addActionListener(e->{});
 		searchFriend.addActionListener(e->{});
@@ -89,7 +99,7 @@ class Window01 extends JFrame{
 
 public class Messenger_List {
 	public static void main(String[] args) {
-		Window01 window = new Window01();
+		List window = new List();
 		
 
 		
