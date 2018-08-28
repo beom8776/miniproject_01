@@ -6,5 +6,6 @@ public class Server {
 		NetManager server = new NetManager(50000);
 		server.workServer();
 		
+		
 	}
 }
