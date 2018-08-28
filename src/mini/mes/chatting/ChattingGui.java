@@ -1,9 +1,5 @@
 package mini.mes.chatting;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,18 +11,24 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import mini.mes.net.Server;
+
+
 public class ChattingGui extends JFrame{
+	
+	private Server server = new Server();
 	
 	private JPanel		panel = new JPanel();
 	
-	private JButton		profileBt = new JButton("profile");	//프로파일 버튼
-	private JLabel		noticeLb= new JLabel("Notice");		//공지사항 라벨
-	private JTextArea	textArea = new JTextArea();			//대화 출력창
-	private JTextField	inputField = new JTextField();		//대화 입력창
-	private JButton		sendBt = new JButton("send");		//입력대화 전송 버튼
+	private JButton		profileBt = new JButton("profile");		//프로필 버튼
+	private JLabel			noticeLb= new JLabel("Notice");			//공지사항 라벨
+	private JTextArea	textArea = new JTextArea();					//대화 출력창
+	private JTextField	inputField = new JTextField();				//대화 입력창
+	private JButton		sendBt = new JButton("send");				//입력대화 전송 버튼
 	private JButton		emoticonBt = new JButton("emticon");	//이모티콘
 	private JButton		fileSendBt = new JButton("fileSend");	//파일 전송 버튼
 	
+
 	private JMenuBar	bar = new JMenuBar();		//기능 구현용 메뉴바
 	private JMenu		emoticon = new JMenu("이모티콘");		//이모티콘 메뉴
 	private JMenu		filemanager = new JMenu("파일매니져");	//파일메니져 메뉴
@@ -57,6 +59,7 @@ public class ChattingGui extends JFrame{
 		this.setResizable(true);
 		
 		this.setVisible(true);
+		
 	}
 	
 	/**
@@ -83,6 +86,7 @@ public class ChattingGui extends JFrame{
 						
 	}
 	/**
+
 	 * 메뉴 메소드
 	 */
 	public void menu() {
@@ -144,4 +148,13 @@ public class ChattingGui extends JFrame{
 		
 	}
 		
+	/**
+	 * 테스트용 메인 메소드
+	 */
+	 public static void main(String[] args) {
+		
+		 ChattingGui chat = new ChattingGui();
+		 
+	}
+	
 }

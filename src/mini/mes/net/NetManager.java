@@ -21,7 +21,6 @@ public class NetManager extends Thread{
 	private Socket socket;
 	private ServerSocket server;
 	
-	
 	/**
 	 * 서버용 생성자
 	 * @param port 포트번호
@@ -102,7 +101,7 @@ public class NetManager extends Thread{
 			
 			while(true) {
 				String line = in.readLine();
-				System.out.println("line = " + line);
+//				System.out.println("line = " + line); //테스트 출력
 			}
 			
 //			in.close();
@@ -121,13 +120,12 @@ public class NetManager extends Thread{
 		try {
 			PrintWriter out = new PrintWriter(
 					new OutputStreamWriter(socket.getOutputStream()));
-			
-			while(true) {
-				String input = JOptionPane.showInputDialog("메시지 입력");
+
+				String input = JOptionPane.showInputDialog("메시지");
 				if(input != null) {
 					out.println(input);
 					out.flush();
-				}
+
 			}
 			
 //			out.close();
