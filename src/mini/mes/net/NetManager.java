@@ -10,8 +10,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
 
+import mini.mes.chatting.ChattingGui;
 
+
+/**
+ * 네트워크 매니저 클래스
+ * @author 최범석
+ */
 public class NetManager extends Thread{
+	
 	
 	/**
 	 * 변수 생성
@@ -20,6 +27,20 @@ public class NetManager extends Thread{
 	private int port;
 	private Socket socket;
 	private ServerSocket server;
+	private String text;
+	
+	public String getText() {
+		return text;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	
+	/**
+	 *  채팅 GUI 실행 인스턴스
+	 */
+	ChattingGui chat = new ChattingGui();
 	
 	/**
 	 * 서버용 생성자
@@ -89,6 +110,7 @@ public class NetManager extends Thread{
 		}
 	}
 	
+	
 	/**
 	 * 수신 메소드(스레드)
 	 * - 수신 도구 생성
@@ -101,7 +123,7 @@ public class NetManager extends Thread{
 			
 			while(true) {
 				String line = in.readLine();
-//				System.out.println("line = " + line); //테스트 출력
+				chat.yourChat(line);
 			}
 			
 //			in.close();
@@ -110,6 +132,7 @@ public class NetManager extends Thread{
 			e.getStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * 전송 메소드
@@ -121,11 +144,16 @@ public class NetManager extends Thread{
 			PrintWriter out = new PrintWriter(
 					new OutputStreamWriter(socket.getOutputStream()));
 
-				String input = JOptionPane.showInputDialog("메시지");
+			while(true) {
+				String input = null;
+				if(chat.isFlag()) 
+					input = chat.getSendText();
+				Thread.sleep(200L);
 				if(input != null) {
 					out.println(input);
 					out.flush();
-
+					chat.setFlag(false);
+				}
 			}
 			
 //			out.close();
