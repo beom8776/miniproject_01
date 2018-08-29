@@ -10,5 +10,6 @@ public class GroupClient {
 	public static void main(String[] args) {
 		NetManager server = new NetManager("localhost", 50000);
 		server.workGroupClient();
+		server.start();
 	}
 }

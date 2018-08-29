@@ -41,8 +41,9 @@ public class ClientInfo extends Thread {
 			try {
 				while(true) {				
 					String text = in.readUTF();
-//					System.out.println(socket + " : " + text);//테스트코드
-					netmanager.chat.yourChat(text);
+					System.out.println(socket + " : " + text);//테스트코드
+					System.out.println(this.getName());//테스트코드
+//					netmanager.chat.yourChat(text);
 					netmanager.broadcast(text);
 				} 
 			}
