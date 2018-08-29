@@ -31,6 +31,7 @@ public class NetManager extends Thread{
 	private ServerSocket server;
 	private String text;
 	private List<ClientInfo> list = new ArrayList<>();
+	ChattingGui chat = new ChattingGui();
 	
 	public String getText() {
 		return text;
@@ -39,11 +40,7 @@ public class NetManager extends Thread{
 		this.text = text;
 	}
 
-	
-	/**
-	 *  채팅 GUI 실행 인스턴스
-	 */
-	ChattingGui chat = new ChattingGui();
+
 	
 	/**
 	 * 서버용 생성자
@@ -75,6 +72,8 @@ public class NetManager extends Thread{
 	 */
 	public void workServer() {
 		try{
+//			[0] 채팅 프로그램 실행
+			chat.setVisible(true);
 //			[1] 서버 준비
 			this.server = new ServerSocket(port);
 //			[2] 연결 대기
@@ -89,6 +88,7 @@ public class NetManager extends Thread{
 					
 		}catch(Exception e){
 			e.printStackTrace();
+			System.out.println("서버 연결 오류");
 		}
 	}
 	
@@ -98,6 +98,8 @@ public class NetManager extends Thread{
 	 */
 	public void workClient() {
 		try{
+//			[0] 채팅 프로그램 실행
+			chat.setVisible(true);
 //			[1] 연결 시도
 			socket = new Socket(inet, port);
 //			[2] 스레드 생성(수신)
@@ -110,6 +112,7 @@ public class NetManager extends Thread{
 					
 		}catch(Exception e){
 			e.printStackTrace();
+			System.out.println("클라이언트 연결 오류");
 		}
 	}
 	
@@ -120,6 +123,7 @@ public class NetManager extends Thread{
 	public void workGroupServer() {
 		try {
 			this.server = new ServerSocket(port);
+			this.addList();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("그룹 서버 연결 오류");
@@ -131,7 +135,9 @@ public class NetManager extends Thread{
 	 * 그룹채팅 클라이언트 연결 실행 메소드
 	 */
 	public void workGroupClient() {
-		try (Socket socket = new Socket(inet,port)){
+		try {
+			chat.setVisible(true);
+			Socket socket = new Socket(inet,port);
 			ObjectOutputStream out = new ObjectOutputStream(
 					socket.getOutputStream());
 			while(true) {
@@ -163,7 +169,9 @@ public class NetManager extends Thread{
 				ClientInfo client = new ClientInfo(this, socket);		//[2] 클라이언트 인스턴스 생성
 				list.add(client);															//[3] 목록에 클라이언트 정보를 등록
 				client.setDaemon(true);
-				list.add(client);
+				client.start();
+//				System.out.println(list.size()); //테스트코드
+//				System.out.println(list); //테스트코드
 			}catch(Exception e) {
 				e.printStackTrace();
 				System.out.println("서버 연결 오류");
@@ -179,6 +187,8 @@ public class NetManager extends Thread{
 	public void broadcast(String text) {
 		for(ClientInfo clientInfo : list) {
 			try {
+//				System.out.println("뿌리는 메시지 : " + text);// 테스트코드
+//				System.out.println("clientInfo : " + clientInfo.getName());// 테스트코드
 				clientInfo.send(text);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -204,7 +214,8 @@ public class NetManager extends Thread{
 //			in.close();
 		}
 		catch(Exception e){
-			e.getStackTrace();
+			e.printStackTrace();
+			System.out.println("메시지 불러오기 오류");
 		}
 	}
 	
@@ -233,6 +244,7 @@ public class NetManager extends Thread{
 		}
 		catch(Exception e){
 			e.getStackTrace();
+			System.out.println("메시지 보내기 오류");
 		}
 	}
 	
