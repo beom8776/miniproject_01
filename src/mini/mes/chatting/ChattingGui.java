@@ -18,7 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import mini.mes.file.FileManager;
-
+ 
 /**
  * 채팅방 클래스
  * @author 허원석, 최범석
@@ -26,6 +26,12 @@ import mini.mes.file.FileManager;
 public class ChattingGui extends JFrame{
 	
 	
+	/**
+	 * 파일 관리 매니저 인스턴스 생성
+	 */
+		FileManager file = new FileManager("chatDB.db");
+		
+		
 	/**
 	 * 변수 생성
 	 */
@@ -39,7 +45,6 @@ public class ChattingGui extends JFrame{
 	private JButton		emoticonBt = new JButton("emticon");	//이모티콘
 	private JButton		fileSendBt = new JButton("fileSend");	//파일 전송 버튼
 	
-
 	private JMenuBar	bar = new JMenuBar();		//기능 구현용 메뉴바
 	private JMenu		emoticon = new JMenu("이모티콘");		//이모티콘 메뉴
 	private JMenu		filemanager = new JMenu("파일매니져");	//파일메니져 메뉴
@@ -76,12 +81,6 @@ public class ChattingGui extends JFrame{
 	public void setFlag(boolean flag) {
 		this.flag = flag;
 	}
-	
-	
-/**
- * 파일 관리 매니저 인스턴스 생성
- */
-	FileManager file = new FileManager("chatDB.db");
 	
 	
 	/**
