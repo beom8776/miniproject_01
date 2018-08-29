@@ -119,7 +119,7 @@ public class ChattingGui extends JFrame{
 		this.setLocationByPlatform(true);
 		this.setResizable(false);
 		
-		this.setVisible(true);
+//		this.setVisible(true);
 
 		//대화 내용 불러오기
 		buf = file.fileInput();
@@ -288,11 +288,11 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 테스트용 메인 메소드
 	 */
-	 public static void main(String[] args) {
-		
-		 ChattingGui chat = new ChattingGui();
-		
-	}
+//	 public static void main(String[] args) {
+//		
+//		 ChattingGui chat = new ChattingGui();
+//		
+//	}
 
 
 
