@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import mini.mes.file.FileManager;
  
 /**
@@ -29,21 +28,22 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 파일 관리 매니저 인스턴스 생성
 	 */
-		FileManager file = new FileManager("chatDB.db");
+	FileManager file = new FileManager("chatDB.db");
 		
 		
 	/**
 	 * 변수 생성
 	 */
 	//라벨,버튼 관련
-  private JPanel		panel = new JPanel();
+	private JPanel		panel = new JPanel();
   
-	private JButton		profileBt = new JButton("profile");		//프로필 버튼
-	private JLabel			noticeLb= new JLabel("Notice");			//공지사항 라벨
-	private JTextArea	textArea = new JTextArea();					//대화 출력창
-	private JTextField	inputField = new JTextField();				//대화 입력창
-	private JButton		sendBt = new JButton("send");				//입력대화 전송 버튼
-	private JButton		emoticonBt = new JButton("emoticon");	//이모티콘
+  	private JButton		profileBt = new JButton("profile");	//프로파일 버튼
+	private JButton		noticeLb= new JButton("Notice");	//공지사항 라벨
+	private JTextArea	area = new JTextArea();				//대화 출력창
+	private JScrollPane	areascroll = new JScrollPane(area);	//대화 출력창 스크롤
+	private JTextField	inputField = new JTextField();		//대화 입력창
+	private JButton		sendBt = new JButton("send");		//입력대화 전송 버튼
+	private JButton		emoticonBt = new JButton("emticon");	//이모티콘
 	private JButton		fileSendBt = new JButton("fileSend");	//파일 전송 버튼
 	
 	//메뉴 관련
@@ -123,7 +123,7 @@ public class ChattingGui extends JFrame{
 
 		//대화 내용 불러오기
 		buf = file.fileInput();
-		textArea.setText(buf.toString());
+		area.setText(buf.toString());
 		
 	}
 	
@@ -203,7 +203,7 @@ public class ChattingGui extends JFrame{
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				if ( exitConfirm == 0 ) {
-					buf = new StringBuffer(textArea.getText());
+					buf = new StringBuffer(area.getText());
 					file.fileOutput(buf);
 					System.exit(0);
 				}
@@ -218,6 +218,7 @@ public class ChattingGui extends JFrame{
 				emoticonClick.show(x, y);
 			}
 		});
+		
 		
 		/**
 		 * 정보메뉴 프로그램 버젼 출력 Dialog
@@ -270,7 +271,7 @@ public class ChattingGui extends JFrame{
 	 * @param 내가 보낸 메시지
 	 */
 	public void myChat(String text) {
-		textArea.append("[나] : " + text + "\n");
+		area.append("[나] : " + text + "\n");
 	}
 	
 	
@@ -279,7 +280,7 @@ public class ChattingGui extends JFrame{
 	 * @param 상대가 보낸 메시지
 	 */
 	public void yourChat(String text) {
-		textArea.append("[상대] : " + text + "\n");
+		area.append("[상대] : " + text + "\n");
 	}
 
 
