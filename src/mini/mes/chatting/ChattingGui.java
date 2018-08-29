@@ -1,9 +1,11 @@
 package mini.mes.chatting;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -15,22 +17,32 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import mini.mes.file.FileManager;
+
+/**
+ * 채팅방 클래스
+ * @author 허원석, 최범석
+ */
 public class ChattingGui extends JFrame{
 	
-	private JPanel		panel = new JPanel();
 	
+	/**
+	 * 변수 생성
+	 */
 	//라벨,버튼 관련
-	private JButton		profileBt = new JButton("profile");	//프로파일 버튼
-	private JButton		noticeLb= new JButton("Notice");	//공지사항 라벨
-	private JTextArea	area = new JTextArea();				//대화 출력창
-	private JScrollPane	areascroll = new JScrollPane(area);	//대화 출력창 스크롤
-	private JTextField	inputField = new JTextField();		//대화 입력창
-	private JButton		sendBt = new JButton("send");		//입력대화 전송 버튼
-	private JButton		emoticonBt = new JButton("emticon");	//이모티콘
+  private JPanel		panel = new JPanel();
+  
+	private JButton		profileBt = new JButton("profile");		//프로필 버튼
+	private JLabel			noticeLb= new JLabel("Notice");			//공지사항 라벨
+	private JTextArea	textArea = new JTextArea();					//대화 출력창
+	private JTextField	inputField = new JTextField();				//대화 입력창
+	private JButton		sendBt = new JButton("send");				//입력대화 전송 버튼
+	private JButton		emoticonBt = new JButton("emoticon");	//이모티콘
 	private JButton		fileSendBt = new JButton("fileSend");	//파일 전송 버튼
 	
 	//메뉴 관련
-	private JMenuBar	bar = new JMenuBar();				//기능 구현용 메뉴바
+	private JMenuBar	bar = new JMenuBar();		//기능 구현용 메뉴바
+
 	private JMenu		emoticon = new JMenu("이모티콘");		//이모티콘 메뉴
 	private JMenu		filemanager = new JMenu("파일매니져");	//파일메니져 메뉴
 	private JMenu		capture	= new JMenu("캡쳐");			//화면 캡쳐 메뉴
@@ -62,13 +74,39 @@ public class ChattingGui extends JFrame{
 	private	JMenuItem	noticedel  = new JMenuItem("지우기");	//공지사항 지우기
 	private JMenuItem	noticeset  = new JMenuItem("설정");	//공지사항 설정
 	
+  
 	/**
 	 * Dialog 인스턴스 생성.
 	 */
 	EmoticonDialog emoticonClick = new EmoticonDialog();
 	
+	private boolean flag = true;
+	private String sendText;
+	private StringBuffer buf;
+	
+	//Setter & Getter
+	public String getSendText() {
+		return sendText;
+	}
+	public void setSendText(String text) {
+		this.sendText = text;
+	}
+	public boolean isFlag() {
+		return flag;
+	}
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+	
+	
+/**
+ * 파일 관리 매니저 인스턴스 생성
+ */
+	FileManager file = new FileManager("chatDB.db");
+	
+	
 	/**
-	 * 기본 생성자
+	 * 생성자
 	 */
 	public ChattingGui() {
 		display();
@@ -77,12 +115,19 @@ public class ChattingGui extends JFrame{
 		
 		this.setTitle("306 Messenger");
 		this.setSize(500, 730);
+		//창 옵션 설정
 		this.setLocationByPlatform(true);
 		this.setResizable(false);
 		
 		this.setVisible(true);
+
+		//대화 내용 불러오기
+		buf = file.fileInput();
+		textArea.setText(buf.toString());
+		
 	}
 	
+  
 	/**
 	 *화면 배치 메소드
 	 */
@@ -104,8 +149,10 @@ public class ChattingGui extends JFrame{
 		emoticonBt.setBounds(12, 618, 57, 40);
 		panel.add(fileSendBt);
 		fileSendBt.setBounds(81, 618, 57, 40);
-						
+    
 	}
+  
+  
 	/**
 	 * 메뉴 메소드
 	 */
@@ -137,6 +184,8 @@ public class ChattingGui extends JFrame{
 		noticemenu.add(noticeset);
 		
 	}
+  
+  
 	/**
 	 *이벤트 메소드
 	 */
@@ -147,13 +196,17 @@ public class ChattingGui extends JFrame{
 		 */
 		WindowListener w = new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent arg0) {
+			public void windowClosing(WindowEvent e) {
 				int exitConfirm = JOptionPane.showConfirmDialog(panel,
 						"프로그램을 종료하겠습니까?",
 						"종료 확인",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
-				if ( exitConfirm == 0 ) System.exit(0);
+				if ( exitConfirm == 0 ) {
+					buf = new StringBuffer(textArea.getText());
+					file.fileOutput(buf);
+					System.exit(0);
+				}
 			}
 		};
 		this.addWindowListener(w);
@@ -172,6 +225,8 @@ public class ChattingGui extends JFrame{
 		version.addActionListener(e->{
 			JOptionPane.showMessageDialog(panel, "메신져 버젼 : v0.1");
 		});
+		
+		
 		/**
 		 * 정보메뉴 프로그램 종료
 		 */
@@ -179,6 +234,65 @@ public class ChattingGui extends JFrame{
 			System.exit(0);
 		});
 		
+		
+		/**
+		 * 채팅 메시지 입력 버튼 이벤트
+		 */
+		//전송버튼누를때
+		sendBt.addActionListener(e->{
+			inputChat();
+		});
+		//엔터단축키설정
+		KeyListener enter = new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+					inputChat();
+			}
+		};
+		inputField.addKeyListener(enter);
 	}
 		
+	
+	/**
+	 * 채팅 입력 메소드
+	 */
+	public void inputChat() {
+		this.setFlag(true);
+		String text = inputField.getText();
+		this.myChat(text);
+		this.setSendText(text);
+		inputField.setText("");
+	}
+
+	
+	/**
+	 * 나의 채팅을 화면에 출력하는 메소드
+	 * @param 내가 보낸 메시지
+	 */
+	public void myChat(String text) {
+		textArea.append("[나] : " + text + "\n");
+	}
+	
+	
+	/**
+	 * 상대의 채팅을 화면에 출력하는 메소드
+	 * @param 상대가 보낸 메시지
+	 */
+	public void yourChat(String text) {
+		textArea.append("[상대] : " + text + "\n");
+	}
+
+
+
+	/**
+	 * 테스트용 메인 메소드
+	 */
+	 public static void main(String[] args) {
+		
+		 ChattingGui chat = new ChattingGui();
+		
+	}
+
+
+
 }
