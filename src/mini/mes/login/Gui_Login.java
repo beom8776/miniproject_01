@@ -1,4 +1,4 @@
-package Messenger_log;
+package mini.mes.login;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,15 +12,12 @@ class Window_Login extends JDialog{
 //	컴포넌트를 배치할 영역을 JPanel로 구현
 	private JPanel con = new JPanel();
 	
-	
 	private JLabel logLabel = new JLabel("메신저 로그인", JLabel.CENTER); 
-	private JTextField idFiled = new JTextField();	//ID
+	private JTextField idFiled = new JTextField();//ID
 	private JTextField pwFiled = new JPasswordField();	//비밀번호
 	private JButton btLogin = new JButton("로그인");
 	private JButton btCancel = new JButton("취소");
 	private JButton btJoin = new JButton("회원가입");
-
-	
 	
 	public Window_Login() {
 		this.display();
@@ -88,12 +85,3 @@ public class Gui_Login {
 
 	}
 }
-
-
-
-
-
-
-
-
-
