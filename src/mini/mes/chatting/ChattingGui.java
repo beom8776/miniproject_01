@@ -6,7 +6,12 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -86,11 +91,10 @@ public class ChattingGui extends JFrame{
 	 */
 	EmoticonDialog emoticonClick = new EmoticonDialog();
 	
+	//채팅 메시지 관련
 	private boolean flag = true;
 	private String sendText;
 	private StringBuffer buf;
-	
-	//Setter & Getter
 	public String getSendText() {
 		return sendText;
 	}
@@ -104,6 +108,8 @@ public class ChattingGui extends JFrame{
 		this.flag = flag;
 	}
 	
+	//파일 관련
+	private File sendFile;
 	
 	/**
 	 * 생성자
@@ -251,6 +257,45 @@ public class ChattingGui extends JFrame{
 			}
 		};
 		inputField.addKeyListener(enter);
+		
+		
+		/**
+		 * 파일 전송 버튼 이벤트(수정중)
+		 */
+		fileSendBt.addActionListener(e->{
+			JFileChooser file = new JFileChooser();
+			int option = file.showOpenDialog(this);
+			if(option != JFileChooser.APPROVE_OPTION) {
+				JOptionPane.showMessageDialog(null, "선택된 경로가 없습니다", "알림", JOptionPane.CANCEL_OPTION);
+				return;
+			}
+			String filePath = file.getSelectedFile().getPath();
+			sendFile = new File(filePath);
+			long fileSize = sendFile.length();
+	        long totalReadBytes = 0;
+	        byte[] buffer = new byte[1024];
+	        int readBytes;
+	        
+	        try{
+	        	FileInputStream in = new FileInputStream(sendFile);
+	        	Socket socket = new Socket("localhost", 50000);
+	           OutputStream os = socket.getOutputStream();
+	            while ((readBytes = in.read(buffer)) > 0) {
+	                os.write(buffer, 0, readBytes);
+	                totalReadBytes += readBytes;
+	                System.out.println("파일 전송 현황 : " + totalReadBytes + "/"
+	                        + fileSize + " Byte(s) ("
+	                        + (totalReadBytes * 100 / fileSize) + " %)");
+	            }
+	            if(totalReadBytes == 100) 
+	            	JOptionPane.showMessageDialog(null, "파일 전송이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
+	            os.close();
+	            socket.close();
+	        }catch(Exception error) {
+	        	System.out.println("파일 전송 오류");
+	        }
+		});
+		
 	}
 		
 	
@@ -260,7 +305,6 @@ public class ChattingGui extends JFrame{
 	public void inputChat() {
 		this.setFlag(true);
 		String text = inputField.getText();
-		this.myChat(text);
 		this.setSendText(text);
 		inputField.setText("");
 	}
@@ -284,6 +328,14 @@ public class ChattingGui extends JFrame{
 	}
 
 
+	/**
+	 * 상대의 채팅을 화면에 출력하는 메소드
+	 * @param 상대가 보낸 메시지
+	 */
+	public void groupChat(String text) {
+		area.append("[그룹] : " + text + "\n");
+	}
+	
 
 	/**
 	 * 테스트용 메인 메소드
@@ -291,6 +343,7 @@ public class ChattingGui extends JFrame{
 //	 public static void main(String[] args) {
 //		
 //		 ChattingGui chat = new ChattingGui();
+//		 chat.setVisible(true);
 //		
 //	}
 
