@@ -1,9 +1,7 @@
 package mini.mes.net;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -14,13 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import mini.mes.chatting.ChattingGui;
 
-
 /**
  * 네트워크 매니저 클래스
  * @author 최범석
  */
 public class NetManager extends Thread{
-	
 	
 	/**
 	 * 변수 생성
@@ -31,7 +27,7 @@ public class NetManager extends Thread{
 	private ServerSocket server;
 	private String text;
 	private List<ClientInfo> list = new ArrayList<>();
-	ChattingGui chat = new ChattingGui();
+	private ChattingGui chat = new ChattingGui();
 	
 	public String getText() {
 		return text;
@@ -39,7 +35,6 @@ public class NetManager extends Thread{
 	public void setText(String text) {
 		this.text = text;
 	}
-
 
 	
 	/**
@@ -53,7 +48,7 @@ public class NetManager extends Thread{
 	
 /**
  * 클라이언트용 생성자
- * @param ip  수신측 IP
+ * @param ip  접속할 IP
  * @param port 포트번호
  */
 	public NetManager(String ip, int port){
@@ -68,14 +63,14 @@ public class NetManager extends Thread{
 	
 	
 	/**
-	 *	서버 채팅  연결 실행 메소드
+	 *	[1:1] 서버 채팅  연결 실행 메소드
 	 */
-	public void workServer() {
+	public void workServer(ServerSocket server) {
 		try{
 //			[0] 채팅 프로그램 실행
 			chat.setVisible(true);
 //			[1] 서버 준비
-			this.server = new ServerSocket(port);
+			this.server = server;
 //			[2] 연결 대기
 			socket = server.accept();
 //			[3] 스레드 생성(수신)
@@ -94,7 +89,7 @@ public class NetManager extends Thread{
 	
 	
 	/**
-	 * 클라이언트 채팅 연결 실행 메소드
+	 * [1:1] 클라이언트 채팅 연결 실행 메소드
 	 */
 	public void workClient() {
 		try{
@@ -118,90 +113,7 @@ public class NetManager extends Thread{
 	
 	
 	/**
-	 * 그룹채팅 서버 연결 실행 메소드
-	 */
-	public void workGroupServer() {
-		try {
-			this.server = new ServerSocket(port);
-			this.addList();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("그룹 서버 연결 오류");
-		}
-	}
-		
-	
-	/**
-	 * 그룹채팅 클라이언트 연결 실행 메소드
-	 */
-	public void workGroupClient() {
-		try {
-			chat.setVisible(true);
-			Socket socket = new Socket(inet,port);
-			ObjectOutputStream out = new ObjectOutputStream(
-					socket.getOutputStream());
-			while(true) {
-				String input = null;
-				if(chat.isFlag()) 
-					input = chat.getSendText();
-				Thread.sleep(200L);
-				if(input != null) {
-					out.writeUTF(input);
-					out.flush();
-					chat.setFlag(false);
-				}
-			}
-//			socket.close();
-		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println("그룹 클라이언트 연결 오류");
-		}
-	}
-	
-	
-	/**
-	 * 무한반복을 수행하며 사용자가 접속하면 list에 추가하는 메소드
-	 */
-	public void addList() {
-		while(true) {
-			try {
-				Socket socket = server.accept();								//[1] 연결을 수락한다
-				ClientInfo client = new ClientInfo(this, socket);		//[2] 클라이언트 인스턴스 생성
-				list.add(client);															//[3] 목록에 클라이언트 정보를 등록
-				client.setDaemon(true);
-				client.start();
-//				System.out.println(list.size()); //테스트코드
-//				System.out.println(list); //테스트코드
-			}catch(Exception e) {
-				e.printStackTrace();
-				System.out.println("서버 연결 오류");
-			}
-		}	
-	}
-		
-		
-	/**
-	 * 전체에게 메시지를 전송하는 기능
-	 * @param text 전송할 메시지 
-	 */
-	public void broadcast(String text) {
-		for(ClientInfo clientInfo : list) {
-			try {
-//				System.out.println("뿌리는 메시지 : " + text);// 테스트코드
-//				System.out.println("clientInfo : " + clientInfo.getName());// 테스트코드
-				clientInfo.send(text);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("메시지 전송 오류");
-			}
-		}
-	}
-
-	
-	/**
-	 * 수신 메소드(스레드)
-	 * - 수신 도구 생성
-	 * - 무한루프로 수신 후 출력
+	 * [1:1] 채팅 수신 메소드(스레드)
 	 */
 	public void run() {
 		try {
@@ -221,9 +133,7 @@ public class NetManager extends Thread{
 	
 	
 	/**
-	 * 전송 메소드
-	 * - 사용자에게 입력받기
-	 * - 상대에게 전송
+	 * [1:1] 채팅 전송 메소드
 	 */
 	public void send() {
 		try {
@@ -235,6 +145,7 @@ public class NetManager extends Thread{
 					input = chat.getSendText();
 				Thread.sleep(200L);
 				if(input != null) {
+					chat.myChat(input);
 					out.println(input);
 					out.flush();
 					chat.setFlag(false);
@@ -249,23 +160,37 @@ public class NetManager extends Thread{
 	}
 	
 	
-////	테스트용 메인(서버)
-//	public static void main(String[] args) throws UnknownHostException {
-//		NetManager server = new NetManager(50000);
-//		server.workClient();
-//	}
+	/**
+	 * [그룹] 채팅 서버 실행 메소드
+	 * @param server 서버 클래스
+	 * @param serverSocket 서버소켓 정보
+	 */
+	public void workGroupServer(Server server, ServerSocket serverSocket) {
+		try {
+			while(true) {
+				Socket socket = serverSocket.accept();
+				ClientInfo client = new ClientInfo(server, socket);
+				list.add(client);
+				client.setDaemon(true);
+				client.start();
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("오류");
+		}
+	}
 	
 	
-////테스트용 메인(클라이언트)
-//public static void main(String[] args) throws UnknownHostException {
-//		NetManager client = new NetManager("localhost", 50000);
-//		server.workClient();
-//}
+	/**
+	 * [그룹] 받은 메시지를 브로드캐스팅 하는 메소드
+	 * @param message그룹 클라이언트로 부터 받은 메시지
+	 */
+	public void chatBroadcast(String message) {
+		for(ClientInfo client : list) {
+			System.out.println("리스트꺼냄 : " + client.getName()); //테스트코드
+			System.out.println("text : " + message); //테스트코드
+			client.send(message);
+		}
+	}
 	
-	
-//	//테스트용 메인(그룹서버)
-//	public static void main(String[] args) throws IOException {
-//		NetManager server = new NetManager(50000);
-//		server.workGroupServer();
-//	}
 }
