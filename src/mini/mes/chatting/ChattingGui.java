@@ -21,6 +21,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import mini.mes.chatting.EmoticonDialog;
+import mini.mes.chatting.NoticeDialog;
 import mini.mes.file.FileManager;
  
 /**
@@ -42,8 +45,9 @@ public class ChattingGui extends JFrame{
 	//라벨,버튼 관련
 	private JPanel		panel = new JPanel();
   
-  	private JButton		profileBt = new JButton("profile");	//프로파일 버튼
-	private JButton		noticeLb= new JButton("Notice");	//공지사항 라벨
+  	private JButton		profilebt = new JButton("profile");	//프로파일 버튼
+  	private JButton		addtalker = new JButton("add");		//대화상대 추가  	
+	private JButton		noticebt= new JButton("Notice");	//공지사항 라벨
 	private JTextArea	area = new JTextArea();				//대화 출력창
 	private JScrollPane	areascroll = new JScrollPane(area);	//대화 출력창 스크롤
 	private JTextField	inputField = new JTextField();		//대화 입력창
@@ -58,7 +62,6 @@ public class ChattingGui extends JFrame{
 	private JMenu		filemanager = new JMenu("파일매니져");	//파일메니져 메뉴
 	private JMenu		capture	= new JMenu("캡쳐");			//화면 캡쳐 메뉴
 	private JMenu		info	= new JMenu("정보");			//버전과 종료
-	private JMenu		noticemenu = new JMenu("공지사항");	//공지사항 메뉴
 	
 	private JMenuItem	emoticon1 = new JMenuItem("라이언");	//이모티콘 캐릭터 선택 1
 	private JMenuItem	emoticon2 = new JMenuItem("무지");	//이모티콘 캐릭터 선택 2
@@ -72,24 +75,13 @@ public class ChattingGui extends JFrame{
 	
 	private JMenuItem	version = new JMenuItem("버전 정보");	//프로그램 버전
 	private JMenuItem	exit	= new JMenuItem("종료");		//프로그램 종료
-	
-	/**
-	 * 가칭 '공지사항'은 사용자에게 알려야 하는 내용을 대화창 상단에 노출.
-	 * 공지사항은 시스템 운영자와 대화창을 개설한자가 작성(권한을 가진자)할 수 있다.
-	 * '리스트'메뉴에서는 열람만 가능. 대화창 상단의 공지사항 버튼과 동일한 작동을 한다.
-	 * '쓰기'메뉴와 '지우기'메뉴는 권한을 가진자만 실행할 수 있다.
-	 * '설정'메뉴에서는 권한의 부여를 설정할 수 있다. 
-	 */
-	private JMenuItem	noticelist = new JMenuItem("리스트");	//공지사항 게시글 보기
-	private JMenuItem	noticewrite= new JMenuItem("쓰기");	//공지사항 글쓰기
-	private	JMenuItem	noticedel  = new JMenuItem("지우기");	//공지사항 지우기
-	private JMenuItem	noticeset  = new JMenuItem("설정");	//공지사항 설정
-	
-  
+	  
 	/**
 	 * Dialog 인스턴스 생성.
 	 */
-	EmoticonDialog emoticonClick = new EmoticonDialog();
+	EmoticonDialog emoticonClick;
+	
+	NoticeDialog noticeClick;
 	
 	//채팅 메시지 관련
 	private boolean flag = true;
@@ -141,20 +133,22 @@ public class ChattingGui extends JFrame{
 		this.setContentPane(panel);
 		panel.setLayout(null);
 			
-		panel.add(profileBt);
-		profileBt.setBounds(12, 10, 50, 50);
-		panel.add(noticeLb);
-		noticeLb.setBounds(74, 10, 398, 50);
-		panel.add(areascroll);
+		profilebt.setBounds(12, 10, 50, 50);
+		panel.add(profilebt);
+		addtalker.setBounds(71, 10, 50, 50);
+		panel.add(addtalker);
+		noticebt.setBounds(130, 10, 343, 50);
+		panel.add(noticebt);
 		areascroll.setBounds(12, 70, 460, 500);
-		panel.add(inputField);
+		panel.add(areascroll);
 		inputField.setBounds(12, 580, 390, 28);
-		panel.add(sendBt);
+		panel.add(inputField);
 		sendBt.setBounds(414, 579, 58, 28);
-		panel.add(emoticonBt);
+		panel.add(sendBt);
 		emoticonBt.setBounds(12, 618, 57, 40);
-		panel.add(fileSendBt);
+		panel.add(emoticonBt);
 		fileSendBt.setBounds(81, 618, 57, 40);
+		panel.add(fileSendBt);
     
 	}
   
@@ -169,7 +163,6 @@ public class ChattingGui extends JFrame{
 		bar.add(filemanager);
 		bar.add(capture);
 		bar.add(info);
-		bar.add(noticemenu);
 		
 		emoticon.add(emoticon1);
 		emoticon.add(emoticon2);
@@ -183,11 +176,6 @@ public class ChattingGui extends JFrame{
 		
 		info.add(version);
 		info.add(exit);
-		
-		noticemenu.add(noticelist);
-		noticemenu.add(noticewrite);
-		noticemenu.add(noticedel);
-		noticemenu.add(noticeset);
 		
 	}
   
@@ -217,7 +205,28 @@ public class ChattingGui extends JFrame{
 		};
 		this.addWindowListener(w);
 		
+		/**
+		 * 대화창 상단, 대화상대 추가 버튼을 누르면 친구목록다이얼로그 생성
+		 */
+		addtalker.addActionListener(e->{
+			
+		});
+		
+		/**
+		 * 대화창 상단, 공지사항 버튼 누르면 공지사항다이얼로그 생성
+		 */
+		noticebt.addActionListener(e->{
+			noticeClick = new NoticeDialog(this);
+			if( noticeClick.isShowing() == false) {
+				noticeClick.showNotice();
+			}
+		});
+		
+		/**
+		 * 대화창 하단, 이모티콘 버튼을 누르면 이모티콘다이얼로그 생성
+		 */
 		emoticonBt.addActionListener(e->{
+			emoticonClick = new EmoticonDialog(this);
 			if( emoticonClick.isShowing() == false) {
 				int x = this.getX();
 				int y = this.getY() + this.getHeight();
@@ -335,6 +344,14 @@ public class ChattingGui extends JFrame{
 	public void groupChat(String text) {
 		area.append("[그룹] : " + text + "\n");
 	}
+	
+	/**
+	 * EmoticonDialog 클래스에서 선택된 이모티콘을 String으로 받는 메소드 
+	 * @param emoticonsend
+	 */
+	public void emoticonRecive(String emoticonsend) {
+		inputField.setText(inputField.getText() + emoticonsend);
+	}	
 	
 
 	/**
