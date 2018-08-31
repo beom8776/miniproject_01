@@ -2,61 +2,143 @@ package mini.mes.main;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.sun.management.VMOption.Origin;
 
 /**
- *	Swing에서 사용하는 Frame : JFrame 
+ * 나의정보 Tab
+ * @author 김현진
+ *
  */
-class Myinfo extends JFrame{
+public class Messemger_Myinfo extends JPanel{
 	
-//	컴포넌트를 배치할 영역을 JPanel로 구현
-	private JPanel con = new JPanel();
 	
-	public Myinfo() {
-		this.display();
+	private JPanel myinfo = new JPanel();
+	
+	private JFileChooser imageFile = new JFileChooser();
+	private ImageIcon noImage = new ImageIcon("D:\\Java\\workspace\\Image_group\\noImg.jpg");
+	private JLabel mypicture = new JLabel(noImage);
+	
+	private JButton imgChange = new JButton("변경");
+	private JButton imgDel = new JButton("삭제");
+	
+	
+	private JLabel myname = new JLabel("이름");
+	private JLabel myment = new JLabel("상태메시지");
+	private JButton logout = new JButton("로그아웃");
+	private JButton reviseBt = new JButton("수정");
+
+	private JPanel etcPan = new JPanel();
+	private JButton listmanager = new JButton("친구관리");
+	private JButton membersOut = new JButton("회원탈퇴");
+	
+	
+	
+	public Messemger_Myinfo() {
 		this.event();
-		this.menu();
+		this.setLayout(null);
 		
-		this.setTitle("Swing 예제");
-//		this.setLocation(100, 100);
-		this.setLocationByPlatform(true);
-		this.setSize(400, 400);
-		this.setResizable(false);
-		this.setVisible(true);
-	}
-	/**
-	 * 화면 구현 메소드
-	 */
-	public void display() {
-		this.setContentPane(con);//con을 Component 설정 영역으로 등록
+		/**
+		 * 프로필 관리 패널
+		 */
+		this.add(myinfo);
+		myinfo.setLayout(null);
+		myinfo.setBounds(1, 1, 378, 200);
+		myinfo.setBorder(new LineBorder(Color.ORANGE, 2));
 		
-		//this말고 con에 컴포넌트를 추가
+		mypicture.setHorizontalAlignment(SwingConstants.CENTER);
+		myinfo.add(mypicture);
+		mypicture.setBounds(24, 15, 100, 140);
 		
-	}
-	/**
-	 * 이벤트 설정 메소드
-	 */
-	public void event() {
-//		awt에서는 WindowEvent를 직접 구현해서 x버튼을 처리
-//		 -> Swing에서는 옵션을 통해 지정하도록 변경
-//		this.setDefaultCloseOperation(EXIT_ON_CLOSE);//x누르면 프로그램 종료
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);//x누르면 창 소멸
-//		this.setDefaultCloseOperation(HIDE_ON_CLOSE);//x누르면 창 숨김
-//		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);//사용자 직접 구현
+		myinfo.add(imgChange);
+		imgChange.setBounds(13, 160, 60, 20);
+		myinfo.add(imgDel);
+		imgDel.setBounds(76, 160, 60, 20);
 		
+		myname.setBounds(140, 30, 110, 25);
+		myinfo.add(myname);
 		
-	}
-	/**
-	 * 메뉴 구현 메소드
-	 */
-	public void menu() {
+		myment.setBounds(140, 60, 200, 90);
+		myinfo.add(myment);
 		
+		logout.setBounds(284, 10, 90, 20);
+		myinfo.add(logout);
+		
+		reviseBt.setBounds(291, 160, 60, 23);
+		myinfo.add(reviseBt);
+		
+		/**
+		 * 친구관리버튼 및 회원탈퇴버튼 관리 패널
+		 */
+		this.add(etcPan);
+		etcPan.setLayout(null);
+		etcPan.setBounds(1, 205, 378, 528);
+		etcPan.setBorder(new LineBorder(Color.ORANGE, 2));
+		
+		etcPan.add(listmanager);
+		listmanager.setBounds(20, 10, 90, 25);
+		
+		membersOut.setBounds(130, 10, 90, 25);
+		etcPan.add(membersOut);
 	}
 	
+	public void event() {
+		/**
+		 * 프로필 사진 변경
+		 */
+		imgChange.addActionListener(e->{
+			
+//			파일 확장자 필터
+			FileNameExtensionFilter filterJpg = new FileNameExtensionFilter("JPG파일", "jpg");
+			FileNameExtensionFilter filterPng = new FileNameExtensionFilter("PNG파일", "png");
+			imageFile.setFileFilter(filterJpg);
+			imageFile.setFileFilter(filterPng);
+			
+//			이미지 사이즈 변경 후 불러오기
+			int returnpath = imageFile.showOpenDialog(Messemger_Myinfo.this);
+			if(returnpath == 0) {
+				String path = imageFile.getSelectedFile().getPath();
+				ImageIcon changeImg = new ImageIcon(path);
+				Image origin = changeImg.getImage();
+				Image changedImg = origin.getScaledInstance(100, 140, Image.SCALE_SMOOTH);
+				mypicture.setIcon(new ImageIcon(changedImg));
+			}
+		});
+		
+		/**
+		 * 삭제버튼 이벤트 (기본 이미지로 변경)
+		 */
+		imgDel.addActionListener(e->{
+			String path = "D:\\Java\\workspace\\Image_group\\noImg.jpg";
+			mypicture.setIcon(new ImageIcon(path));
+		});
+		
+		/**
+		 * 수정 버튼 이벤트 (텍스트 입력 후 출력)
+		 */
+		reviseBt.addActionListener(e->{
+			String ment = JOptionPane.showInputDialog("상태메시지를 입력하세요.");
+			myment.setText(ment);
+		});
+		
+		/**
+		 * 로그아웃 이벤트
+		 */
+		logout.addActionListener(e->{
+			int logout = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
+
+//			연결작업 준비중
+			if(logout == 0) {}
+		});
+	}
 }
 
-public class Messemger_Myinfo {
-	public static void main(String[] args) {
-		Myinfo window = new Myinfo();
-	}
-}
+
+
+
+
