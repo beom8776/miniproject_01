@@ -75,13 +75,21 @@ public class ChattingGui extends JFrame{
 	
 	private JMenuItem	version = new JMenuItem("버전 정보");	//프로그램 버전
 	private JMenuItem	exit	= new JMenuItem("종료");		//프로그램 종료
-	  
+
+	//대화상대 추가를 위한 변수
+	private int totalfriends;		//사용자의 전체 친구 숫자
+	private int talkers;			//사용자와 대화중인 친구 숫자
+	private String[] friendname;	//친구 이름 배열
+	private String[] friendid;		//친구 아이디 배열
+	
 	/**
 	 * Dialog 인스턴스 생성.
 	 */
 	EmoticonDialog emoticonClick;
 	
 	NoticeDialog noticeClick;
+	
+	AddTalkerDialog addTalkerClick;
 	
 	//채팅 메시지 관련
 	private boolean flag = true;
@@ -209,7 +217,8 @@ public class ChattingGui extends JFrame{
 		 * 대화창 상단, 대화상대 추가 버튼을 누르면 친구목록다이얼로그 생성
 		 */
 		addtalker.addActionListener(e->{
-			
+			addTalkerClick = new AddTalkerDialog(this);
+			addTalkerClick.showDialog();
 		});
 		
 		/**
@@ -351,18 +360,39 @@ public class ChattingGui extends JFrame{
 	 */
 	public void emoticonRecive(String emoticonsend) {
 		inputField.setText(inputField.getText() + emoticonsend);
-	}	
+	}
+	
+	/**
+	 * 현재 대화상대 추가 가능한 인원을 리턴해준다.
+	 * @param totalfriends
+	 * @param talkers
+	 * @return
+	 */
+	public int addTalkerCount() {
+		return totalfriends - talkers;
+	}
+	
+	/**
+	 *AddTalkDialog에서 사용할 대화상대의 이름과 아이디를 더하여 문자열 배열로 생성   
+	 */
+	public String[] addTalkers() {
+		String[] addTalkerNameId = new String[addTalkerCount()];
+		for( int i = 0; i < addTalkerNameId.length; i++) {
+			addTalkerNameId[i] = friendname[i] + " " + friendid[i];
+		}
+		return addTalkerNameId;
+	}
 	
 
 	/**
 	 * 테스트용 메인 메소드
 	 */
-//	 public static void main(String[] args) {
-//		
-//		 ChattingGui chat = new ChattingGui();
-//		 chat.setVisible(true);
-//		
-//	}
+	 public static void main(String[] args) {
+		
+		 ChattingGui chat = new ChattingGui();
+		 chat.setVisible(true);
+		
+	}
 
 
 
