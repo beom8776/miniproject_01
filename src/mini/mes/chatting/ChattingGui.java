@@ -8,8 +8,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Scanner;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -25,6 +28,7 @@ import javax.swing.JTextField;
 import mini.mes.chatting.EmoticonDialog;
 import mini.mes.chatting.NoticeDialog;
 import mini.mes.file.FileManager;
+import mini.mes.net.Server;
  
 /**
  * 채팅방 클래스
@@ -110,6 +114,7 @@ public class ChattingGui extends JFrame{
 	
 	//파일 관련
 	private File sendFile;
+	private static int port = 50000;
 	
 	/**
 	 * 생성자
@@ -288,15 +293,18 @@ public class ChattingGui extends JFrame{
 				return;
 			}
 			String filePath = file.getSelectedFile().getPath();
+			String fileName = file.getSelectedFile().getName();
 			sendFile = new File(filePath);
 			long fileSize = sendFile.length();
 	        long totalReadBytes = 0;
 	        byte[] buffer = new byte[1024];
 	        int readBytes;
-	        
+
 	        try{
+//	        	Server server = new Server(port);//테스트코드
+//	        	server.fileReceiver();//테스트코드
 	        	FileInputStream in = new FileInputStream(sendFile);
-	        	Socket socket = new Socket("localhost", 50000);
+	        	Socket socket = new Socket("localhost", port);
 	           OutputStream os = socket.getOutputStream();
 	            while ((readBytes = in.read(buffer)) > 0) {
 	                os.write(buffer, 0, readBytes);
@@ -305,7 +313,7 @@ public class ChattingGui extends JFrame{
 	                        + fileSize + " Byte(s) ("
 	                        + (totalReadBytes * 100 / fileSize) + " %)");
 	            }
-	            if(totalReadBytes == 100) 
+	            if((totalReadBytes*100 / fileSize) == 100) 
 	            	JOptionPane.showMessageDialog(null, "파일 전송이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
 	            os.close();
 	            socket.close();
@@ -315,7 +323,7 @@ public class ChattingGui extends JFrame{
 		});
 		
 	}
-		
+	
 	
 	/**
 	 * 채팅 입력 메소드
