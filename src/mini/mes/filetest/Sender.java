@@ -2,6 +2,7 @@ package mini.mes.filetest;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import javax.swing.JFileChooser;
@@ -19,7 +20,7 @@ public class Sender {
 			System.out.println("[클라이언트] 소켓 접속 ok");
 			FileInputStream in = new FileInputStream(file);
 			System.out.println("[클라이언트]  InputStream 연결 ok");
-			OutputStream out = socket.getOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			System.out.println("[클라이언트]  OutputStream 연결 ok");
 			byte[] buffer = new byte[1024];
 			while(true) {
