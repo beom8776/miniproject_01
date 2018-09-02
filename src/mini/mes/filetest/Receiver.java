@@ -3,6 +3,7 @@ package mini.mes.filetest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JFileChooser;
@@ -23,7 +24,7 @@ public class Receiver {
 			ServerSocket server = new ServerSocket(50001);
 			Socket socket = server.accept();
 			System.out.println("[서버] 수신 대기중... ok");
-			InputStream in = socket.getInputStream();
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			System.out.println("[서버]  InputStream 연결 ok");
 			
 			
