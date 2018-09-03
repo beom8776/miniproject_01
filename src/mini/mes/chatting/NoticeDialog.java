@@ -57,6 +57,7 @@ public class NoticeDialog extends JDialog{
 		this.setSize(450, 300);
 		this.setLocationByPlatform(true);
 		this.setResizable(false);
+		this.setModal(true);
 		
 		this.setVisible(true);
 	}

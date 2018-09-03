@@ -36,6 +36,7 @@ public class AddTalkerDialog extends JDialog {
 		this.setSize(283, 400);
 		this.setLocationByPlatform(true);
 		this.setResizable(false);
+		this.setModal(true);
 		
 		this.setVisible(true);
 	}
