@@ -28,6 +28,8 @@ import javax.swing.JTextField;
 import mini.mes.chatting.EmoticonDialog;
 import mini.mes.chatting.NoticeDialog;
 import mini.mes.file.FileManager;
+import mini.mes.file.ReceiveClient;
+import mini.mes.file.SendClient;
 import mini.mes.net.Server;
  
 /**
@@ -283,43 +285,11 @@ public class ChattingGui extends JFrame{
 		
 		
 		/**
-		 * 파일 전송 버튼 이벤트(수정중)
+		 * 파일 전송 버튼 이벤트
 		 */
 		fileSendBt.addActionListener(e->{
-			JFileChooser file = new JFileChooser();
-			int option = file.showOpenDialog(this);
-			if(option != JFileChooser.APPROVE_OPTION) {
-				JOptionPane.showMessageDialog(null, "선택된 경로가 없습니다", "알림", JOptionPane.CANCEL_OPTION);
-				return;
-			}
-			String filePath = file.getSelectedFile().getPath();
-			String fileName = file.getSelectedFile().getName();
-			sendFile = new File(filePath);
-			long fileSize = sendFile.length();
-	        long totalReadBytes = 0;
-	        byte[] buffer = new byte[1024];
-	        int readBytes;
-
-	        try{
-//	        	Server server = new Server(port);//테스트코드
-//	        	server.fileReceiver();//테스트코드
-	        	FileInputStream in = new FileInputStream(sendFile);
-	        	Socket socket = new Socket("localhost", port);
-	           OutputStream os = socket.getOutputStream();
-	            while ((readBytes = in.read(buffer)) > 0) {
-	                os.write(buffer, 0, readBytes);
-	                totalReadBytes += readBytes;
-	                System.out.println("파일 전송 현황 : " + totalReadBytes + "/"
-	                        + fileSize + " Byte(s) ("
-	                        + (totalReadBytes * 100 / fileSize) + " %)");
-	            }
-	            if((totalReadBytes*100 / fileSize) == 100) 
-	            	JOptionPane.showMessageDialog(null, "파일 전송이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
-	            os.close();
-	            socket.close();
-	        }catch(Exception error) {
-	        	System.out.println("파일 전송 오류");
-	        }
+			SendClient sc = new SendClient();
+			ReceiveClient rc = new ReceiveClient();
 		});
 		
 	}
