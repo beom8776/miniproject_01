@@ -54,6 +54,7 @@ public class EmoticonDialog extends JDialog{
 		int y = y1 - this.getHeight();
 		this.setLocation(x, y);
 		this.setResizable(false);
+		this.setModal(true);
 		
 		this.setVisible(true);
 	}

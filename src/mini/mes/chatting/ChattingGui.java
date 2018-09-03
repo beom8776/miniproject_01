@@ -1,18 +1,24 @@
 package mini.mes.chatting;
 
+import java.awt.AWTException;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Scanner;
-
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -25,8 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import mini.mes.chatting.EmoticonDialog;
-import mini.mes.chatting.NoticeDialog;
 import mini.mes.file.FileManager;
 import mini.mes.file.ReceiveClient;
 import mini.mes.file.SendClient;
@@ -51,15 +55,15 @@ public class ChattingGui extends JFrame{
 	//라벨,버튼 관련
 	private JPanel		panel = new JPanel();
   
-  	private JButton		profilebt = new JButton("profile");	//프로파일 버튼
-  	private JButton		addtalker = new JButton("add");		//대화상대 추가  	
-	private JButton		noticebt= new JButton("Notice");	//공지사항 라벨
+  	private JButton		profilebt = new JButton("프로필");	//프로파일 버튼
+  	private JButton		addtalker = new JButton("대화상대추가");//대화상대 추가  	
+	private JButton		noticebt= new JButton("공지사항");		//공지사항 라벨
 	private JTextArea	area = new JTextArea();				//대화 출력창
 	private JScrollPane	areascroll = new JScrollPane(area);	//대화 출력창 스크롤
 	private JTextField	inputField = new JTextField();		//대화 입력창
-	private JButton		sendBt = new JButton("send");		//입력대화 전송 버튼
-	private JButton		emoticonBt = new JButton("emticon");	//이모티콘
-	private JButton		fileSendBt = new JButton("fileSend");	//파일 전송 버튼
+	private JButton		sendBt = new JButton("전송");			//입력대화 전송 버튼
+	private JButton		emoticonBt = new JButton("이모티콘");	//이모티콘
+	private JButton		fileSendBt = new JButton("파일전송");	//파일 전송 버튼
 	
 	//메뉴 관련
 	private JMenuBar	bar = new JMenuBar();		//기능 구현용 메뉴바
@@ -82,6 +86,9 @@ public class ChattingGui extends JFrame{
 	private JMenuItem	version = new JMenuItem("버전 정보");	//프로그램 버전
 	private JMenuItem	exit	= new JMenuItem("종료");		//프로그램 종료
 
+	private Font		f1 = new Font("", Font.BOLD, 10);	//10사이즈 글씨 폰트
+	private Font		f2 = new Font("", Font.BOLD, 20);	//20사이즈 글씨 폰트
+	
 	//대화상대 추가를 위한 변수
 	private int totalfriends;		//사용자의 전체 친구 숫자
 	private int talkers;			//사용자와 대화중인 친구 숫자
@@ -96,6 +103,8 @@ public class ChattingGui extends JFrame{
 	NoticeDialog noticeClick;
 	
 	AddTalkerDialog addTalkerClick;
+	
+	DialogueCapture captureClick;
 	
 	//채팅 메시지 관련
 	private boolean flag = true;
@@ -149,6 +158,7 @@ public class ChattingGui extends JFrame{
 		panel.setLayout(null);
 			
 		profilebt.setBounds(12, 10, 50, 50);
+		profilebt.setFont(f1);
 		panel.add(profilebt);
 		addtalker.setBounds(71, 10, 50, 50);
 		panel.add(addtalker);
@@ -164,7 +174,8 @@ public class ChattingGui extends JFrame{
 		panel.add(emoticonBt);
 		fileSendBt.setBounds(81, 618, 57, 40);
 		panel.add(fileSendBt);
-    
+		
+		area.setEditable(false);
 	}
   
   
@@ -292,6 +303,22 @@ public class ChattingGui extends JFrame{
 			ReceiveClient rc = new ReceiveClient();
 		});
 		
+		screencapture.addActionListener(e->{
+			captureClick = new DialogueCapture(this);
+			
+			int x = this.getX()+21;
+			int y = this.getY()+125;
+			int x1 = area.getWidth();
+			int y1 = area.getHeight();
+			
+			captureClick.areaCapture(x, y, x1, y1);
+		});
+		
+		seecapture.addActionListener(e->{
+			captureClick = new DialogueCapture(this);
+			
+			captureClick.openCapture();
+		});
 	}
 	
 	
@@ -365,12 +392,12 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 테스트용 메인 메소드
 	 */
-	 public static void main(String[] args) {
-		
-		 ChattingGui chat = new ChattingGui();
-		 chat.setVisible(true);
-		
-	}
+//	 public static void main(String[] args) {
+//		
+//		 ChattingGui chat = new ChattingGui();
+//		 chat.setVisible(true);
+//		
+//	}
 
 
 
