@@ -19,7 +19,9 @@ public class SendClient {
 		 * 변수 생성
 		 */
 		String ip = "127.0.0.1";
+//		String ip = "192.168.0.9";
 		int serverPort = Board.MAIN_PORTNUMBER;
+//		int serverPort = Board.SUB_PORTNUMBER;
 		Socket socket = null;
 		String[] segments = ip.split("\\.");
 		String serverIP = (Long.parseLong(segments[0])

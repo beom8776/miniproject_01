@@ -1,4 +1,4 @@
-package mini.mes.file;
+package mini.mes.filetest2;
 
 public class Board {
 	
