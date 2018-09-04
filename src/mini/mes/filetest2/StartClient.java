@@ -9,54 +9,72 @@ import java.net.Socket;
 import mini.mes.chatting.ChattingGui;
 import mini.mes.file.Board;
 
+/**
+ * 클라이언트 기능 실행 클래스
+ * @author 최범석
+ */
 public class StartClient extends Thread{
 		
-		private Socket socket;
-		private PrintWriter pw;
-		private BufferedReader br;
-		private ChattingGui chat;
-		
-		public StartClient(){
-			try {
-				this.chat = new ChattingGui();
-				chat.setVisible(true);
-				
-//				String ip = "192.168.0.9";
-				String ip = "127.0.0.1";
-				String[] segments = ip.split("\\.");
-				String serverIP = (Long.parseLong(segments[0])
-									+ "." + Long.parseLong(segments[1]) 
-									+ "."	+ Long.parseLong(segments[2])
-									+ "." + Long.parseLong(segments[3]));
-				socket = new Socket(serverIP,  Board.MAIN_PORTNUMBER);
-				System.out.println("[클라이언트] 서버에 연결되었습니다.");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	/**
+	 * 변수 생성
+	 */
+	private Socket socket;
+	private PrintWriter pw;
+	private BufferedReader br;
+	private ChattingGui chat;
+	private String user;
+
+	
+	/**
+	 * 생성자
+	 */
+	public StartClient(){
+		try {
+			this.chat = new ChattingGui();
+			chat.setVisible(true);
+			
+//			String ip = "192.168.0.9";
+			String ip = "127.0.0.1";
+			String[] segments = ip.split("\\.");
+			String serverIP = (Long.parseLong(segments[0])
+								+ "." + Long.parseLong(segments[1]) 
+								+ "."	+ Long.parseLong(segments[2])
+								+ "." + Long.parseLong(segments[3]));
+			socket = new Socket(serverIP,  Board.MAIN_PORTNUMBER);
+			System.out.println("[클라이언트] 서버에 연결되었습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		
-		
+	}
+	
+	
+	/**
+	 * 지속적으로 메시지가 입력되면 보내는 기능 실행
+	 */
 		public void work() {
 			try {
         	this.pw = new PrintWriter(
 					new OutputStreamWriter(socket.getOutputStream()));
 	        	
         	//아이디 보내기
-        	String user = "beomseok";
+        	user = "beomseok";
         	pw.println(user);
         	pw.flush();
         	
         	//메시지 보내기
    			while(true) {
    				String input = null;
+//   				System.out.println("[클라이언트] flag : " + chat.isFlag());//테스트코드
+   				Thread.sleep(300L);
    				if(chat.isFlag()) {
+
    					input = chat.getSendText();
-   					Thread.sleep(200L);
+   					Thread.sleep(50L);
    				}
    				if(input != null) {
-   		           pw.println(input);
-   		           pw.flush();
+   					chat.myChat(input);
+   					pw.println(input);
+   					pw.flush();
    					System.out.println("[클라이언트] ("+socket+")input : " + input);//테스트코드
    					chat.setFlag(false);
    				}
@@ -68,7 +86,7 @@ public class StartClient extends Thread{
    			System.out.println("[클라이언트] 메시지 서버로 전송 오류");
    		}
 	}
-		
+
 		
 		/**
 		 * 반복해서 메시지를 수신하는 메소드
@@ -92,6 +110,10 @@ public class StartClient extends Thread{
 			}
 		}
 		
+		
+		/**
+		 * 테스트용 메인
+		 */
 		public static void main(String[] args) {
 			StartClient client = new StartClient();
 			client.setDaemon(true);

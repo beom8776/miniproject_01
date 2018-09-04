@@ -99,7 +99,7 @@ public class ChattingGui extends JFrame{
 	DialogueCapture	captureClick;	//화면캡쳐
 	
 	//채팅 메시지 관련
-	private boolean flag = true;
+	private boolean flag = false;
 	private String sendText;
 	private StringBuffer buf;
 	public String getSendText() {

@@ -7,22 +7,20 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import mini.mes.chatting.ChattingGui;
-
+/**
+ * 서버에 접속한 클라이언트의 정보를 보관하는 클래스
+ * @author 최범석
+ */
 public class ClientInfo extends Thread {
+	
+	/**
+	 * 변수 생성
+	 */
 	private Socket socket;
 	private Server server;
 	private BufferedReader br;
 	private PrintWriter pw;
-	private String user;
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
+	private String user = "";
 	
 	/**
 	 * 생성자
@@ -34,34 +32,39 @@ public class ClientInfo extends Thread {
 			this.socket = socket;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "Client [socket=" + socket + "]";
 	}
 	
+	
+	/**
+	 * 사용자의 메시지를 지속적으로 수신하는 메소드
+	 */
 	@Override
-		public void run() {
-//			지속적으로 반복하여 사용자의 메시지를 수신
-			try {
-				this.br = new BufferedReader(
-						new InputStreamReader(socket.getInputStream()));
-				
-				//아이디 불러오기
-				this.setUser(br.readLine());
-				System.out.println("아이디 : " + this.getUser()); //테스트코드
-				
-				//메시지 불러오기
-				while(true) {
-					String text = br.readLine();
-					System.out.println("[서버] " + socket + " : " + text);
-					server.broadcast(text);
-				} 
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-				System.out.println("[서버] 메시지 수신 오류");
-			}
+	public void run() {
+		try {
+			this.br = new BufferedReader(
+					new InputStreamReader(socket.getInputStream()));
+			
+			//아이디 불러오기
+			String userID = br.readLine();
+			this.setUser(userID);
+			System.out.println("[서버] " + socket + " : " + this.getUser() + "님 접속");//테스트코드
+			
+			//메시지 불러오기
+			while(true) {
+				String text = br.readLine();
+				System.out.println("[서버] " + this.getUser() + " : " + text);//테스트코드
+				server.broadcast(this.getUser(), text);
+			} 
 		}
+		catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("[서버] 메시지 수신 오류");
+		}
+	}
 
 
 	/**
@@ -78,6 +81,13 @@ public class ClientInfo extends Thread {
 			e.printStackTrace();
 			System.out.println("[서버] 메시지 출력 실패");
 		}
+	}
+
+	public void setUser(String ID) {
+		this.user = ID;
+	}
+	public String getUser() {
+		return user;
 	}
 	
 }
