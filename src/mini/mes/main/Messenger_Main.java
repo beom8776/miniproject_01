@@ -3,6 +3,7 @@ package mini.mes.main;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Messenger Main 화면
@@ -48,6 +49,7 @@ class Messenger_m extends JFrame{
 	 * 이벤트 설정 메소드
 	 */
 	public void event() {
+		
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		WindowListener closer = new WindowAdapter() {
 			@Override

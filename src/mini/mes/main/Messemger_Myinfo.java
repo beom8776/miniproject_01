@@ -1,14 +1,20 @@
 package mini.mes.main;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.sun.management.VMOption.Origin;
 
 /**
  * 나의정보 Tab
@@ -28,21 +34,27 @@ public class Messemger_Myinfo extends JPanel{
 	private JButton imgDel = new JButton("삭제");
 	
 	
-	private JLabel myname = new JLabel("이름");
-	private JLabel myment = new JLabel("상태메시지");
 	private JButton logout = new JButton("로그아웃");
+	private JLabel myname = new JLabel("이름");
+	private JLabel myId = new JLabel("아이디");
+	private JTextArea textArea = new JTextArea();
+	
 	private JButton reviseBt = new JButton("수정");
+	private JButton completeReviseBt = new JButton("완료");
 
 	private JPanel etcPan = new JPanel();
 	private JButton listmanager = new JButton("친구관리");
 	private JButton membersOut = new JButton("회원탈퇴");
 	
 	
+	private Date date = new Date();
+	private SimpleDateFormat sdate = new SimpleDateFormat("yyyy_MM_dd");
+	private String mdate = sdate.format(date);
 	
 	public Messemger_Myinfo() {
 		this.event();
 		this.setLayout(null);
-		
+		System.out.println(mdate);
 		/**
 		 * 프로필 관리 패널
 		 */
@@ -57,20 +69,33 @@ public class Messemger_Myinfo extends JPanel{
 		
 		myinfo.add(imgChange);
 		imgChange.setBounds(13, 160, 60, 20);
+		imgChange.setVisible(false);
+		
 		myinfo.add(imgDel);
 		imgDel.setBounds(76, 160, 60, 20);
+		imgDel.setVisible(false);
 		
-		myname.setBounds(140, 30, 110, 25);
 		myinfo.add(myname);
+		myname.setBounds(140, 15, 120, 25);
 		
-		myment.setBounds(140, 60, 200, 90);
-		myinfo.add(myment);
+		myId.setBounds(140, 45, 120, 25);
+		myinfo.add(myId);
+		textArea.setLineWrap(true);
 		
-		logout.setBounds(284, 10, 90, 20);
+		myinfo.add(textArea);
+		textArea.setBounds(140, 70, 200, 70);
+		textArea.setVisible(true);
+		
 		myinfo.add(logout);
+		logout.setBounds(284, 10, 90, 20);
 		
-		reviseBt.setBounds(291, 160, 60, 23);
 		myinfo.add(reviseBt);
+		reviseBt.setBounds(291, 160, 60, 23);
+		reviseBt.setVisible(true);
+		
+		myinfo.add(completeReviseBt);
+		completeReviseBt.setBounds(291, 160, 60, 23);
+		completeReviseBt.setVisible(false);
 		
 		/**
 		 * 친구관리버튼 및 회원탈퇴버튼 관리 패널
@@ -88,26 +113,43 @@ public class Messemger_Myinfo extends JPanel{
 	}
 	
 	public void event() {
+//			파일 확장자 필터
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & PNG파일", "jpg", "png");
+			imageFile.setFileFilter(filter);
+
 		/**
 		 * 프로필 사진 변경
+		 * 사진 변경후 해당 회원의 DB에 등록시킨다. (작업중)
 		 */
 		imgChange.addActionListener(e->{
-			
-//			파일 확장자 필터
-			FileNameExtensionFilter filterJpg = new FileNameExtensionFilter("JPG파일", "jpg");
-			FileNameExtensionFilter filterPng = new FileNameExtensionFilter("PNG파일", "png");
-			imageFile.setFileFilter(filterJpg);
-			imageFile.setFileFilter(filterPng);
-			
 //			이미지 사이즈 변경 후 불러오기
-			int returnpath = imageFile.showOpenDialog(Messemger_Myinfo.this);
-			if(returnpath == 0) {
-				String path = imageFile.getSelectedFile().getPath();
+			int returnVal = imageFile.showOpenDialog(Messemger_Myinfo.this);
+			imageFile.setMultiSelectionEnabled(false);
+			String path = imageFile.getSelectedFile().getPath();
+			if(returnVal == 0) {
 				ImageIcon changeImg = new ImageIcon(path);
 				Image origin = changeImg.getImage();
 				Image changedImg = origin.getScaledInstance(100, 140, Image.SCALE_SMOOTH);
 				mypicture.setIcon(new ImageIcon(changedImg));
 			}
+			
+			/**
+			 * 이미지 변경 후 DB에 저장
+			 */
+			File imgFile = new File(path);
+			String fname = imgFile.getName();
+			int pos = fname.lastIndexOf(".");
+			String extension = fname.substring(pos+1);
+
+			
+			try {
+				Image img = ImageIO.read(imgFile);
+				BufferedImage buffImg = (BufferedImage)img;
+				
+				File picFile = new File("D:\\eclipse-java-photon-R-win32-x86_64\\workspace\\Project\\db\\"+mdate+"."+extension);
+				ImageIO.write(buffImg, extension, picFile);
+			} catch (IOException e1) {e1.printStackTrace();}
+			
 		});
 		
 		/**
@@ -119,11 +161,39 @@ public class Messemger_Myinfo extends JPanel{
 		});
 		
 		/**
-		 * 수정 버튼 이벤트 (텍스트 입력 후 출력)
+		 * 수정 버튼 이벤트 (사진변경 및 삭제 버튼 / 상태메시지 작성 활성화)
 		 */
 		reviseBt.addActionListener(e->{
-			String ment = JOptionPane.showInputDialog("상태메시지를 입력하세요.");
-			myment.setText(ment);
+			imgChange.setVisible(true);
+			imgDel.setVisible(true);
+			textArea.setVisible(true);
+			completeReviseBt.setVisible(true);
+			reviseBt.setVisible(false);
+			textArea.setEditable(true);
+		});
+		
+		/**
+		 * 완료버튼 이벤트 (사진변경 및 삭제 버튼 / 상태메시지 작성 비활성화)
+		 * 상태메시지를 화면에 출력하고 내용을 DB에 저장한다.
+		 */
+		completeReviseBt.addActionListener(e->{
+			imgChange.setVisible(false);
+			imgDel.setVisible(false);
+			completeReviseBt.setVisible(false);
+			reviseBt.setVisible(true);
+			textArea.setEditable(false);
+			
+			/**
+			 * 상태메시지 Server DB로 전송
+			 */
+			try {
+				
+				FileWriter mentWriter = new FileWriter("Profile_DB/my_Picture_Ment/ment.txt");	//DB 저장 경로
+				BufferedWriter buffWriter = new BufferedWriter(mentWriter);
+				String str = textArea.getText();
+				buffWriter.write(str);
+				buffWriter.close();
+			} catch (IOException e1) {e1.printStackTrace();}
 		});
 		
 		/**
