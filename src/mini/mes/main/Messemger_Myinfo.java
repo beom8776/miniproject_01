@@ -4,9 +4,11 @@ import java.awt.*;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,7 +56,6 @@ public class Messemger_Myinfo extends JPanel{
 	public Messemger_Myinfo() {
 		this.event();
 		this.setLayout(null);
-		System.out.println(mdate);
 		/**
 		 * 프로필 관리 패널
 		 */
@@ -85,6 +86,7 @@ public class Messemger_Myinfo extends JPanel{
 		myinfo.add(textArea);
 		textArea.setBounds(140, 70, 200, 70);
 		textArea.setVisible(true);
+		textArea.setEditable(false);
 		
 		myinfo.add(logout);
 		logout.setBounds(284, 10, 90, 20);
@@ -186,14 +188,18 @@ public class Messemger_Myinfo extends JPanel{
 			/**
 			 * 상태메시지 Server DB로 전송
 			 */
-			try {
-				
-				FileWriter mentWriter = new FileWriter("Profile_DB/my_Picture_Ment/ment.txt");	//DB 저장 경로
-				BufferedWriter buffWriter = new BufferedWriter(mentWriter);
-				String str = textArea.getText();
-				buffWriter.write(str);
-				buffWriter.close();
-			} catch (IOException e1) {e1.printStackTrace();}
+
+			String ip = "127.0.0.1";
+			DataOutputStream dout;
+				try {
+					Socket socket = new Socket("localhost", 50001);
+					dout = new DataOutputStream(socket.getOutputStream());
+					
+					dout.writeUTF(textArea.getText());
+					dout.flush();
+					
+					dout.close();
+					} catch (IOException e1) {e1.printStackTrace();}	
 		});
 		
 		/**
