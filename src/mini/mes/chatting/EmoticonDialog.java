@@ -95,7 +95,7 @@ public class EmoticonDialog extends JDialog{
 	 * 이모티콘 이벤트 메소드
 	 */
 	public void event() {
-		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	
 		ActionListener listener = e->{
 			String emoticonsend = "";
