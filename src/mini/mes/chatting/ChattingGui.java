@@ -1,10 +1,8 @@
 package mini.mes.chatting;
 
-import java.awt.AWTException;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.Robot;
+import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -18,6 +16,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -49,58 +48,58 @@ public class ChattingGui extends JFrame{
 	 * 변수 생성
 	 */
 	//라벨,버튼 관련
-	private JPanel		panel = new JPanel();
+	private JPanel		panel 		= new JPanel();
   
-  	private JButton		profilebt = new JButton("프로필");	//프로파일 버튼
-  	private JButton		addtalker = new JButton("대화상대추가");//대화상대 추가  	
-	private JButton		noticebt= new JButton("공지사항");		//공지사항 라벨
-	private JTextArea	area = new JTextArea();				//대화 출력창
-	private JScrollPane	areascroll = new JScrollPane(area);	//대화 출력창 스크롤
-	private JTextField	inputField = new JTextField();		//대화 입력창
-	private JButton		sendBt = new JButton("전송");			//입력대화 전송 버튼
-	private JButton		emoticonBt = new JButton("이모티콘");	//이모티콘
-	private JButton		fileSendBt = new JButton("파일전송");	//파일 전송 버튼
+  	private JButton		profilebt	= new JButton(new ImageIcon("files/image/profil.jpg"));		//프로파일 버튼
+  	private JButton		addtalker	= new JButton(new ImageIcon("files/image/addtalker.jpg"));	//대화상대 추가  	
+	private JButton		noticebt	= new JButton("공지사항");		//공지사항 라벨
+	private JTextArea	area 		= new JTextArea();			//대화 출력창
+	private JScrollPane	areascroll 	= new JScrollPane(area);	//대화 출력창 스크롤
+	private JTextField	inputField 	= new JTextField();			//대화 입력창
+	private JButton		sendBt 		= new JButton(new ImageIcon("files/image/sendbt.jpg"));		//입력대화 전송 버튼
+	private JButton		emoticonBt 	= new JButton(new ImageIcon("files/image/emoticon.jpg"));		//이모티콘
+	private JButton		fileSendBt 	= new JButton(new ImageIcon("files/image/filesend.jpg"));		//파일 전송 버튼
 	
 	//메뉴 관련
-	private JMenuBar	bar = new JMenuBar();		//기능 구현용 메뉴바
+	private JMenuBar	bar 			= new JMenuBar();			//기능 구현용 메뉴바
+	private JMenu		emoticon 		= new JMenu("이모티콘");		//이모티콘 메뉴
+	private JMenu		filemanager 	= new JMenu("파일매니져");		//파일메니져 메뉴
+	private JMenu		capture			= new JMenu("캡쳐");			//화면 캡쳐 메뉴
+	private JMenu		info			= new JMenu("정보");			//버전과 종료
+	private JMenu		emoticon1 		= new JMenu("라이언");		//이모티콘 캐릭터 선택 1
+	private JMenu		emoticon2 		= new JMenu("무지");			//이모티콘 캐릭터 선택 2
+	private JMenuItem[]	emoticonItem	= new JMenuItem[10];		//이모티콘 메뉴의 하위 메뉴 10개
+	private JMenuItem	filesend 		= new JMenuItem("파일전송");	//파일 전송
+	private JMenuItem	filerecive 		= new JMenuItem("받은파일");	//받은 파일
+	private JMenuItem	screencapture 	= new JMenuItem("화면캡쳐"); 	//보이는 화면 캡쳐
+	private JMenuItem	fullcapture 	= new JMenuItem("전체캡쳐");	//모든 대화내용 캡쳐
+	private JMenuItem	seecapture 		= new JMenuItem("캡쳐보기");	//캡쳐된 이미지 보기
+	private JMenuItem	version 		= new JMenuItem("버전 정보");	//프로그램 버전
+	private JMenuItem	exit			= new JMenuItem("종료");		//프로그램 종료
 
-	private JMenu		emoticon = new JMenu("이모티콘");		//이모티콘 메뉴
-	private JMenu		filemanager = new JMenu("파일매니져");	//파일메니져 메뉴
-	private JMenu		capture	= new JMenu("캡쳐");			//화면 캡쳐 메뉴
-	private JMenu		info	= new JMenu("정보");			//버전과 종료
-	
-	private JMenuItem	emoticon1 = new JMenuItem("라이언");	//이모티콘 캐릭터 선택 1
-	private JMenuItem	emoticon2 = new JMenuItem("무지");	//이모티콘 캐릭터 선택 2
-	
-	private JMenuItem	filesend = new JMenuItem("파일전송");	//파일 전송
-	private JMenuItem	filerecive = new JMenuItem("받은파일");//받은 파일
-	
-	private JMenuItem	screencapture = new JMenuItem("화면캡쳐"); //보이는 화면 캡쳐
-	private JMenuItem	fullcapture = new JMenuItem("전체캡쳐");	//모든 대화내용 캡쳐
-	private JMenuItem	seecapture = new JMenuItem("캡쳐보기");	//캡쳐된 이미지 보기
-	
-	private JMenuItem	version = new JMenuItem("버전 정보");	//프로그램 버전
-	private JMenuItem	exit	= new JMenuItem("종료");		//프로그램 종료
-
+	private ImageIcon[] icon = new ImageIcon[10];					//이모티콘 메뉴의 하위메뉴에 들어가는 이미지배열
+	private String[]	emoticonTitle = {"lion1","lion2","lion3",
+			"lion4","lion5","mugi1",
+			"mugi2","mugi3","mugi4","sinanda"};						//이모티콘 메뉴의 하위메뉴 타이틀
 	private Font		f1 = new Font("", Font.BOLD, 10);	//10사이즈 글씨 폰트
 	private Font		f2 = new Font("", Font.BOLD, 20);	//20사이즈 글씨 폰트
 	
+	
+	
+	
 	//대화상대 추가를 위한 변수
-	private int totalfriends;		//사용자의 전체 친구 숫자
-	private int talkers;			//사용자와 대화중인 친구 숫자
-	private String[] friendname;	//친구 이름 배열
-	private String[] friendid;		//친구 아이디 배열
+	private int 		totalfriends;	//사용자의 전체 친구 숫자
+	private int 		talkers;		//사용자와 대화중인 친구 숫자
+	private String[] 	friendname;		//친구 이름 배열
+	private String[] 	friendid;		//친구 아이디 배열
 	
 	/**
-	 * Dialog 인스턴스 생성.
+	 * Dialog 인스턴스 선언
 	 */
-	EmoticonDialog emoticonClick;
-	
-	NoticeDialog noticeClick;
-	
-	AddTalkerDialog addTalkerClick;
-	
-	DialogueCapture captureClick;
+	EmoticonDialog	emoticonClick;	//이모티콘다이얼로그
+	NoticeDialog	noticeClick;	//공지사항다이얼로그
+	AddTalkerDialog	addTalkerClick; //대화상대추가다이얼로그
+	DialogueCapture	captureClick;	//화면캡쳐
 	
 	//채팅 메시지 관련
 	private boolean flag = true;
@@ -127,8 +126,10 @@ public class ChattingGui extends JFrame{
 	 */
 	public ChattingGui() {
 		display();
-		event();
+		imageCut();
+		menuIcon();
 		menu();
+		event();
 		
 		this.setTitle("306 Messenger");
 		this.setSize(500, 730);
@@ -172,12 +173,25 @@ public class ChattingGui extends JFrame{
 		
 		area.setEditable(false);
 	}
-  
-  
+	/**
+	 * 이모티콘 메뉴의 하위메뉴에 이미지와 타이틀 삽입하여 생성   
+	 */
+	public void menuIcon() {
+		Image img;
+		Image img1;
+		ImageIcon newIcon;
+		for( int i = 0; i < emoticonItem.length; i++) {
+			img = icon[i].getImage();
+			img1 = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);		//기존 이미지를 축소
+			newIcon = new ImageIcon(img1);									//축소한 이미지를 새로운 ImageIcon 인스턴스 생성
+			emoticonItem[i] = new JMenuItem(emoticonTitle[i], newIcon);
+		}
+	}
 	/**
 	 * 메뉴 메소드
 	 */
 	public void menu() {
+		
 		this.setJMenuBar(bar);
 		
 		bar.add(emoticon);
@@ -187,9 +201,16 @@ public class ChattingGui extends JFrame{
 		
 		emoticon.add(emoticon1);
 		emoticon.add(emoticon2);
+		emoticon1.add(emoticonItem[0]);	emoticon1.add(emoticonItem[1]);
+		emoticon1.add(emoticonItem[2]);	emoticon1.add(emoticonItem[3]);
+		emoticon1.add(emoticonItem[4]);
+		emoticon2.add(emoticonItem[5]);	emoticon2.add(emoticonItem[6]);
+		emoticon2.add(emoticonItem[7]);	emoticon2.add(emoticonItem[8]);
+		emoticon2.add(emoticonItem[9]);
 		
 		filemanager.add(filesend);
 		filemanager.add(filerecive);
+		
 		
 		capture.add(screencapture);
 		capture.add(fullcapture);
@@ -197,7 +218,6 @@ public class ChattingGui extends JFrame{
 		
 		info.add(version);
 		info.add(exit);
-		
 	}
   
   
@@ -326,7 +346,9 @@ public class ChattingGui extends JFrame{
 	        	System.out.println("파일 전송 오류");
 	        }
 		});
-		
+		/**
+		 * 캡쳐 메뉴의 화면캡쳐 이벤트
+		 */
 		screencapture.addActionListener(e->{
 			captureClick = new DialogueCapture(this);
 			
@@ -338,11 +360,32 @@ public class ChattingGui extends JFrame{
 			captureClick.areaCapture(x, y, x1, y1);
 		});
 		
+		/**
+		 * 캡쳐 메뉴의 캡쳐보기 이벤트 
+		 */
 		seecapture.addActionListener(e->{
 			captureClick = new DialogueCapture(this);
 			
 			captureClick.openCapture();
 		});
+		
+		/**
+		 * 이모티콘 메뉴의 하위메뉴 선택 이벤트
+		 */
+		ActionListener listener = e->{
+			String emoticonsend = "";
+			
+			for ( int i = 0; i < 10; i++) {
+				if ( e.getSource() == emoticonItem[i]) {
+						emoticonsend = emoticonItem[i].getText();
+						System.out.println(emoticonsend);
+						emoticonRecive("["+emoticonsend+"]");
+				}
+			}
+		};
+		for( int i = 0; i < 10; i++) {
+			emoticonItem[i].addActionListener(listener);
+		}
 	}
 		
 	
@@ -411,7 +454,25 @@ public class ChattingGui extends JFrame{
 		}
 		return addTalkerNameId;
 	}
-	
+	/**
+	 * 이모티콘 메뉴의 하위메뉴에 넣을 이미티콘 이미지를 잘라 배열에 넣는다
+	 */
+	public void imageCut() {
+		BufferedImage buf = null;
+		try {
+			buf = ImageIO.read(new File("files/image/emoticon10.jpg"));
+			int w = buf.getWidth() / 10;
+			int y = buf.getHeight();
+			BufferedImage[] arr = new BufferedImage[10];
+			for (int i = 0; i < arr.length; i++) {
+				arr[i] = buf.getSubimage(i*w, 0, w, y);
+				icon[i] = new ImageIcon(arr[i]);
+			}
+			
+		}catch(Exception err) {
+			err.printStackTrace();
+		}
+	}
 
 	/**
 	 * 테스트용 메인 메소드
