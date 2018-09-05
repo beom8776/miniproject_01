@@ -1,71 +1,134 @@
 package mini.mes.net;
 
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * 그룹채팅 서버 실행 클래스
+ * 채팅 서버 클래스
  * @author 최범석
  */
-public class Server extends Thread{
-	
-	/**
-	 * 변수 생성
-	 */
-	private int port;
-	private ServerSocket server;
-	private NetManager manager;
-	
-	
-	/**
-	 * 생성자
-	 * @param port 포트번호
-	 */
-	public Server(int port) {
-		try {
-			this.port = port;
-			this.server = new ServerSocket(port);
-			this.manager = new NetManager(port);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("서버 소켓 오류");
+public class Server extends Thread {
+		
+		/**
+		 * 변수 생성
+		 */
+		private ServerSocket serverSocket = null;
+		private Socket socket = null;
+		private Map<String, ClientInfo> map;
+//		private List<ClientInfo> list = new ArrayList<>();//테스트코드
+		
+		
+		/**
+		 * 생성자
+		 */
+		public Server() {
+			try {
+				map = new HashMap<>();
+				//서버 연결 준비
+				this.serverSocket = new ServerSocket(Board.MAIN_PORTNUMBER);
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("[서버] 서버 생성 오류");
+			}
 		}
-	}
-	
-	
-	/**
-	 * [1:1] 채팅 서버 실행 메소드
-	 */
-	public void workServerOne() {
-		manager.workServer(server);
-	}
-	
-	
-	/**
-	 * [그룹] 채팅 서버 실행 메소드
-	 */
-	public void workGroup() {
-		manager.workGroupServer(this, server);
-	}
-	
-	
-	/**
-	 * [그룹] 받은 메시지를 브로드캐스팅 하는 메소드
-	 * @param text 그룹 클라이언트로 부터 받은 메시지
-	 */
-	public void broadcast(String text) {
-		manager.chatBroadcast(text);
-	}
-	
-	
-	/**
-	 * 채팅 서버 실행 메인
-	 */
-//	public static void main(String[] args) {
-//		
-//		Server group = new Server(50000);
-//		1:1 채팅일경우
-//		group.workServerOne();
-//		그룹 채팅일경우
-//		group.workGroup();
-//	}
+		
+		
+		/**
+		 * 서버의 수신 대기 및 클라이언트의 정보를 저장하는 메소드(서버 기능 실행)
+		 */
+		public void work() {
+			try {
+				while(true) {
+					System.out.println("[서버] 수신 대기중... ok");
+					socket = serverSocket.accept();
+					ClientInfo client = new ClientInfo(this, socket);
+					client.setDaemon(true);
+					client.start();
+//					this.setDaemon(true);
+//					this.start();
+					Thread.sleep(50L);
+					map.put(client.getUser(), client);
+					System.out.println("[서버] 접속한 인원 수 : " + map.size());//테스트코드
+					for ( String key : map.keySet() ) {
+					    System.out.println("[서버] 접속한 사람 : ID : " + key +" / socket정보 : " + map.get(key));//테스트코드
+					}
+
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("[서버] 클라이언트 접속 실패");
+			}
+		}
+		
+		
+		/**
+		 * 클라이언트로부터 파일을 받는 메소드
+		 */
+		public void run() {
+			try {
+				FileServerManager filemanager = new FileServerManager(this, socket);
+				filemanager.setDaemon(true);
+				filemanager.start();
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("[서버] 클라이언트 접속 실패");
+			}
+		}
+		
+		/**
+		 * 전체에게 메시지를 전송하는 기능
+		 * @param text 보내는 메시지
+		 */
+		public void broadcast(String userID, String text) {
+			try {
+				for ( String key : map.keySet() ) {
+//				    System.out.println("[서버] 접속 ID : " + key); // 테스트코드
+//				    System.out.println("[서버] socket정보 : " + map.get(key)); // 테스트코드
+//					if(!key.equals(userID))
+						map.get(key).send(userID, text);
+				}
+//				for(ClientInfo client : list) {
+//					System.out.println("[서버] 리스트꺼냄 : " + client.getName()); //테스트코드
+//					System.out.println("[서버] text : " + text); //테스트코드
+//					client.send(text);
+//				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("[서버] 브로드캐스트 실패");
+			}
+		}
+
+		
+		/**
+		 * 클라이언트에게 파일을 전송하는 메소드
+		 */
+		public void fileBroadcast(String userID, String fileName, byte[] data) {
+			try {
+				for ( String key : map.keySet() ) {
+				    System.out.println("[서버] 접속 ID : " + key); // 테스트코드
+				    System.out.println("[서버] socket정보 : " + map.get(key)); // 테스트코드
+					if(!key.equals(userID))
+						map.get(key).sendFile(userID, fileName, data); 
+				}
+//				for(ClientInfo client : list) {
+//					System.out.println("[서버] 리스트꺼냄 : " + client.getName()); //테스트코드
+//					System.out.println("[서버] text : " + text); //테스트코드
+//					client.send(text);
+//				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("[서버] 브로드캐스트 실패");
+			}
+		}
+		
+		
+		/**
+		 * 테스트용 메인
+		 */
+		public static void main(String[] args) {
+			Server server = new Server();
+			server.work();
+		}
 }
