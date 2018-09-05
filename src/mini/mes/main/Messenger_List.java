@@ -32,6 +32,7 @@ class Messenger_List extends JPanel{
 
 	
 	public Messenger_List() {
+		this.event();
 		this.setLayout(null);
 		
 		/**
@@ -72,4 +73,13 @@ class Messenger_List extends JPanel{
 		startfr2.setBounds(298, 18, 72, 24);
 		startfr2.setFont(new Font("굴림", Font.BOLD, 9));
 	}
+	
+	public void event() {
+		
+	}
 }
+
+
+
+
+

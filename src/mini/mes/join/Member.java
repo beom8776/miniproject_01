@@ -12,30 +12,35 @@ public class Member implements Serializable {
 	private String phone;
 	private Calendar birth;
 	
+	
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
+	
 	public String getPw() {
 		return pw;
 	}
 	public void setPw(String pw) {
 		this.pw = pw;
 	}
+	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getPhone() {
 		return phone;
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+	
 	public Calendar getBirth() {
 		return birth;
 	}
@@ -43,13 +48,14 @@ public class Member implements Serializable {
 		this.birth = birth;
 	}
 	
-	public void save() throws IOException {
-		File target = new File("join", this.getId() + ".db");
-		FileOutputStream fos = new FileOutputStream(target);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		
-		oos.writeObject(this);
-	}
+
+//	public void save() {
+	
+//		File target = new File("join", this.getId() + ".db");
+//		FileOutputStream fos = new FileOutputStream(target);
+//		ObjectOutputStream oos = new ObjectOutputStream(fos);
+//		oos.writeObject(this);
+//	}
 	
 	@Override
 	public String toString() {

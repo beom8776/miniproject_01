@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -190,15 +191,16 @@ public class Messemger_Myinfo extends JPanel{
 			 */
 
 			String ip = "127.0.0.1";
+			ObjectOutputStream objectOut;
 			DataOutputStream dout;
 				try {
-					Socket socket = new Socket("localhost", 50001);
-					dout = new DataOutputStream(socket.getOutputStream());
+					Socket socket = new Socket("localhost", 50010);
+					objectOut = new ObjectOutputStream(socket.getOutputStream());
+					objectOut.writeObject(textArea.getText());
+//					dout = new DataOutputStream(socket.getOutputStream());
 					
-					dout.writeUTF(textArea.getText());
-					dout.flush();
-					
-					dout.close();
+					objectOut.flush();
+					objectOut.close();
 					} catch (IOException e1) {e1.printStackTrace();}	
 		});
 		
