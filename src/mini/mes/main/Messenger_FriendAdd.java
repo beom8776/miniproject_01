@@ -2,8 +2,15 @@ package mini.mes.main;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+
+import mini.mes.join.Member;
 
 /**
  * 친구찾기 / 추가 Tab
@@ -26,6 +33,9 @@ public class Messenger_FriendAdd extends JPanel{
 	 * 검색 결과 영역
 	 */
 	private JPanel resultPan = new JPanel();
+	
+
+	private Member m = new Member();
 	
 	
 //	친구 검색 결과 출력 (별도 클래스 필요)
@@ -109,13 +119,22 @@ public class Messenger_FriendAdd extends JPanel{
 		searadd.setFont(new Font("굴림", Font.BOLD, 13));
 	}
 	public void event() {
-		
 		/**
 		 * 검색버튼 이벤트
 		 */
 		searchBt.addActionListener(e->{
-//			회원DB에서 검색한 ID또는 이름을 찾는다.
-//			그리고 회원이 등록한 사진, 이름, 상태메시지를 Panel에 담는다.
+//			Server에 회원정보 검색요청
+			try {
+				Socket socket = new Socket("localhost", 50010);
+				ObjectOutputStream objectOut = new ObjectOutputStream(socket.getOutputStream());
+				objectOut.writeObject(searchFd.getText());
+				objectOut.flush();
+				objectOut.close();
+			} catch (Exception e1) {e1.printStackTrace();}
+			
+			
+			
+			
 			
 		});
 	}
