@@ -136,6 +136,9 @@ class JoinWindow extends JFrame {
 			
 			System.out.println();
 			
+			/**
+			 * Server에 회원정보 전송
+			 */
 			try {
 				Socket socket = new Socket("localhost", 50010);
 				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
