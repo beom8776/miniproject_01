@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,7 +24,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
 import mini.mes.file.FileManager;
+import mini.mes.net.StartClient;
 import mini.mes.file.ReceiveClient;
 import mini.mes.file.SendClient;
  
@@ -80,7 +83,8 @@ public class ChattingGui extends JFrame{
 	private Font		f1 = new Font("", Font.BOLD, 10);	//10사이즈 글씨 폰트
 	private Font		f2 = new Font("", Font.BOLD, 20);	//20사이즈 글씨 폰트
 	
-	
+	//클라이언트 레퍼런스
+	private StartClient client;
 	
 	
 	//대화상대 추가를 위한 변수
@@ -121,7 +125,9 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 생성자
 	 */
-	public ChattingGui() {
+	public ChattingGui(StartClient client) {
+		this.client = client;
+		
 		display();
 		imageCut();
 		menuIcon();
@@ -139,6 +145,7 @@ public class ChattingGui extends JFrame{
 		//대화 내용 불러오기
 		buf = file.fileInput();
 		area.setText(buf.toString());
+		
 		
 	}
 	
@@ -300,7 +307,7 @@ public class ChattingGui extends JFrame{
 		//엔터단축키설정
 		KeyListener enter = new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) 
 					inputChat();
 			}
 		};
@@ -311,9 +318,10 @@ public class ChattingGui extends JFrame{
 		 * 파일 전송 버튼 이벤트
 		 */
 		fileSendBt.addActionListener(e->{
-			SendClient sc = new SendClient();
-			ReceiveClient rc = new ReceiveClient();
+			client.send("sendFile");
 		});
+		
+		
 		/**
 		 * 캡쳐 메뉴의 화면캡쳐 이벤트
 		 */
@@ -361,38 +369,21 @@ public class ChattingGui extends JFrame{
 	 * 채팅 입력 메소드
 	 */
 	public void inputChat() {
-		this.setFlag(true);
-		String text = inputField.getText();
-		this.setSendText(text);
+		String text =this.inputField.getText();
+		client.send(text);
 		inputField.setText("");
 	}
 
 	
 	/**
-	 * 나의 채팅을 화면에 출력하는 메소드
-	 * @param 내가 보낸 메시지
+	 * 채팅을 화면에 출력하는 메소드
+	 * @param userID 보낸 사용자 ID
+	 * @param text 상대가 보낸 메시지
 	 */
-	public void myChat(String text) {
-		area.append("[나] : " + text + "\n");
-	}
-	
-	
-	/**
-	 * 상대의 채팅을 화면에 출력하는 메소드
-	 * @param 상대가 보낸 메시지
-	 */
-	public void yourChat(String text) {
-		area.append("[상대] : " + text + "\n");
+	public void inputChat(String userID, String text) {
+		area.append("[" + userID + "] : " + text + "\n");
 	}
 
-
-	/**
-	 * 상대의 채팅을 화면에 출력하는 메소드
-	 * @param 상대가 보낸 메시지
-	 */
-	public void groupChat(String text) {
-		area.append("[그룹] : " + text + "\n");
-	}
 	
 	/**
 	 * EmoticonDialog 클래스에서 선택된 이모티콘을 String으로 받는 메소드 

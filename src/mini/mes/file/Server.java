@@ -22,7 +22,7 @@ public class Server {
 		socket = serverSocket.accept();
 		System.out.println("[서버] 수신 대기중... ok");
 		
-		System.out.println("socket = " + socket);
+		System.out.println("socket = " + socket);//테스트코드
 		//파일 수신 기능
 		FileServerManager fr = new FileServerManager(socket);
 		fr.setDaemon(true);

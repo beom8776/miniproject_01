@@ -1,4 +1,4 @@
-package mini.mes.filetest2;
+package mini.mes.net;
 
 public class Board {
 	
