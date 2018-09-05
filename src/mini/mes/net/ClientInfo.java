@@ -1,6 +1,8 @@
 package mini.mes.net;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -18,8 +20,10 @@ public class ClientInfo extends Thread {
 	 */
 	private Socket socket;
 	private Server server;
-	private BufferedReader br;
-	private PrintWriter pw;
+//	private BufferedReader br;
+//	private PrintWriter pw;
+	private DataOutputStream dos;
+	private DataInputStream dis;
 	private String user = null;
 	
 	/**
@@ -31,10 +35,12 @@ public class ClientInfo extends Thread {
 			this.server = server;
 			this.socket = socket;
 			try {
-				this.pw = new PrintWriter(
-						new OutputStreamWriter(socket.getOutputStream()));
-				this.br = new BufferedReader(
-						new InputStreamReader(socket.getInputStream()));
+//				this.pw = new PrintWriter(
+//						new OutputStreamWriter(socket.getOutputStream()));
+//				this.br = new BufferedReader(
+//						new InputStreamReader(socket.getInputStream()));
+				this.dos = new DataOutputStream(socket.getOutputStream());
+				this.dis = new DataInputStream(socket.getInputStream());
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -53,14 +59,17 @@ public class ClientInfo extends Thread {
 	@Override
 	public void run() {
 		try {
+			
 			//아이디 불러오기
-			String userID = br.readLine();
+//			String userID = br.readLine();
+			String userID = dis.readUTF();
 			this.setUser(userID);
 			System.out.println("[서버] " + socket + " : " + this.getUser() + "님 접속");//테스트코드
 			
 			//메시지 불러오기
 			while(true) {
-				String text = br.readLine();
+//				String text = br.readLine();
+				String text = dis.readUTF();
 				if(text != null) {
 					System.out.println("[서버] " + this.getUser() + " : " + text);//테스트코드
 					server.broadcast(userID, text);
@@ -79,12 +88,16 @@ public class ClientInfo extends Thread {
 	 */
 	public void send(String userID, String text) {
 		try {
-			pw.println(userID);
-			pw.flush();
+//			pw.println(userID);
+//			pw.flush();
+			dos.writeUTF(userID);
+			dos.flush();
 			
-			pw.println(text);
-			pw.flush();
-			System.out.println("[서버] 에서 " + userID + "에게 보내주는 text : " + text);//테스트코드
+//			pw.println(text);
+//			pw.flush();
+			dos.writeUTF(text);
+			dos.flush();
+			System.out.println("[서버] 에서 보내주는 text : " + text);//테스트코드
 		}catch(Exception e) {
 			e.printStackTrace();
 			System.out.println("[서버] 메시지 출력 실패");

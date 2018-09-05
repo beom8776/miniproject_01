@@ -48,8 +48,12 @@ public class FileSender extends Thread{
             bis = new BufferedInputStream(new FileInputStream(f));
             
             //사용자 이름 보내기
-            dos.writeUTF(user);
-            dos.flush();
+//            dos.writeUTF(user);
+//            dos.flush();
+            
+            //파일임을 알려주기
+//            dos.writeUTF("[fileSend]");
+//            dos.flush();
             
             //파일이름 보내기
             dos.writeUTF(f.getName());

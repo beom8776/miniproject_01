@@ -318,7 +318,7 @@ public class ChattingGui extends JFrame{
 		 * 파일 전송 버튼 이벤트
 		 */
 		fileSendBt.addActionListener(e->{
-			client.send("sendFile");
+			client.fileSend();
 		});
 		
 		
@@ -436,12 +436,12 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 테스트용 메인 메소드
 	 */
-	 public static void main(String[] args) {
-		
-		 ChattingGui chat = new ChattingGui();
-		 chat.setVisible(true);
-		
-	}
+//	 public static void main(String[] args) {
+//		
+//		 ChattingGui chat = new ChattingGui();
+//		 chat.setVisible(true);
+//		
+//	}
 
 
 
