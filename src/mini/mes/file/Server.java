@@ -22,9 +22,11 @@ public class Server {
 		socket = serverSocket.accept();
 		System.out.println("[서버] 수신 대기중... ok");
 		
+		System.out.println("socket = " + socket);
 		//파일 수신 기능
 		FileServerManager fr = new FileServerManager(socket);
-		fr.start();
+		fr.setDaemon(true);
+		fr.run();
 		
 		//수신자 클라이언트에게 파일 보내기 기능
 		fr.send();

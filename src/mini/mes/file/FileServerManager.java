@@ -1,6 +1,5 @@
 package mini.mes.file;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,8 +18,9 @@ public class FileServerManager extends Thread{
 	private DataInputStream dis;
 	private byte[] data;
 	private DataOutputStream dos;
-	private BufferedInputStream bis;
 	private String fileName;
+	
+	
 	/**
 	 * 생성자
 	 * @param socket 소켓 정보
@@ -30,9 +30,15 @@ public class FileServerManager extends Thread{
 		data = new byte[1024];
 	}
 	  
+	
+	/**
+	 * 송신 클라이언트에게 파일을 받아 byte[]에 저장하는 메소드
+	 */
 	public void run() {
 		try {
+			System.out.println("socket = " + socket);
 			dis = new DataInputStream(socket.getInputStream());
+			System.out.println("dis = " + dis);
 	 
 			//파일 이름 받기
 			fileName = dis.readUTF();
@@ -49,8 +55,13 @@ public class FileServerManager extends Thread{
 	        }
 	    }
 	
+	
+	/**
+	 *  수신 클라이언트에게 파일을 전송하는 메소드
+	 */
 	public void send() {
-		String ip = "127.0.0.1";
+		String ip = "192.168.0.9";
+//		String ip = "127.0.0.1";
 		int clientPort = Board.SUB_PORTNUMBER;
 		socket = null;
 		String[] segments = ip.split("\\.");
@@ -75,7 +86,6 @@ public class FileServerManager extends Thread{
             dos.flush();
             
             dos.close();
-            bis.close();
             System.out.println("[서버] 클라이언트로 파일 전송 완료");
 		}catch(Exception e) {
 			e.printStackTrace();
