@@ -14,10 +14,11 @@ public class Server extends Thread {
 		/**
 		 * 변수 생성
 		 */
+	
 		private ServerSocket serverSocket = null;
 		private Socket socket = null;
 		private Map<String, ClientInfo> map;
-//		private List<ClientInfo> list = new ArrayList<>();//테스트코드
+		private boolean threadFlag = true;
 		
 		
 		/**
@@ -44,8 +45,14 @@ public class Server extends Thread {
 					System.out.println("[서버] 수신 대기중... ok");
 					socket = serverSocket.accept();
 					ClientInfo client = new ClientInfo(this, socket);
-					client.setDaemon(true);
-					client.start();
+					if(threadFlag) {
+						client.setDaemon(true);
+						client.start();
+					}
+					else {
+						this.setDaemon(true);
+						this.start();
+					}
 //					this.setDaemon(true);
 //					this.start();
 					Thread.sleep(50L);
