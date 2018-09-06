@@ -11,7 +11,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,10 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import mini.mes.file.FileManager;
-import mini.mes.net.StartClient;
-import mini.mes.file.ReceiveClient;
-import mini.mes.file.SendClient;
+import mini.mes.chatfile.FileManager;
+import mini.mes.net.ChatClient;
  
 /**
  * 채팅방 클래스
@@ -84,7 +81,7 @@ public class ChattingGui extends JFrame{
 	private Font		f2 = new Font("", Font.BOLD, 20);	//20사이즈 글씨 폰트
 	
 	//클라이언트 레퍼런스
-	private StartClient client;
+	private ChatClient client;
 	
 	
 	//대화상대 추가를 위한 변수
@@ -125,7 +122,7 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 생성자
 	 */
-	public ChattingGui(StartClient client) {
+	public ChattingGui(ChatClient client) {
 		this.client = client;
 		
 		display();
@@ -139,6 +136,10 @@ public class ChattingGui extends JFrame{
 		//창 옵션 설정
 		this.setLocationByPlatform(true);
 		this.setResizable(false);
+		
+		//스크롤 옵션 설정
+		
+		
 		
 //		this.setVisible(true);
 
@@ -302,13 +303,16 @@ public class ChattingGui extends JFrame{
 		 */
 		//전송버튼누를때
 		sendBt.addActionListener(e->{
-			inputChat();
+			if(inputField.getText() != null)
+				inputChat();
 		});
 		//엔터단축키설정
 		KeyListener enter = new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) 
-					inputChat();
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if(inputField.getText() != null)
+						inputChat();
+				}
 			}
 		};
 		inputField.addKeyListener(enter);
@@ -372,6 +376,8 @@ public class ChattingGui extends JFrame{
 		String text =this.inputField.getText();
 		client.send(text);
 		inputField.setText("");
+		area.setCaretPosition(area.getDocument().getLength()); 
+
 	}
 
 	
