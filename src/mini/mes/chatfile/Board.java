@@ -1,4 +1,4 @@
-package mini.mes.file;
+package mini.mes.chatfile;
 
 public class Board {
 	

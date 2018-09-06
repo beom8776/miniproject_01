@@ -1,9 +1,15 @@
 package mini.mes.main;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+
+import mini.mes.net.ChatClient;
 
 /**
  * 친구목록 Tab
@@ -75,7 +81,9 @@ class Messenger_List extends JPanel{
 	}
 	
 	public void event() {
-		
+		startfr1.addActionListener(e->{
+			ChatClient client = new ChatClient();
+		});
 	}
 }
 

@@ -9,7 +9,7 @@ import java.util.Map;
  * 채팅 서버 클래스
  * @author 최범석
  */
-public class Server extends Thread {
+public class ChatServer extends Thread {
 		
 		/**
 		 * 변수 생성
@@ -17,14 +17,13 @@ public class Server extends Thread {
 	
 		private ServerSocket serverSocket = null;
 		private Socket socket = null;
-		private Map<String, ClientInfo> map;
-		private boolean threadFlag = true;
+		private Map<String, ChatServerManager> map;
 		
 		
 		/**
 		 * 생성자
 		 */
-		public Server() {
+		public ChatServer() {
 			try {
 				map = new HashMap<>();
 				//서버 연결 준비
@@ -44,17 +43,9 @@ public class Server extends Thread {
 				while(true) {
 					System.out.println("[서버] 수신 대기중... ok");
 					socket = serverSocket.accept();
-					ClientInfo client = new ClientInfo(this, socket);
-					if(threadFlag) {
-						client.setDaemon(true);
-						client.start();
-					}
-					else {
-						this.setDaemon(true);
-						this.start();
-					}
-//					this.setDaemon(true);
-//					this.start();
+					ChatServerManager client = new ChatServerManager(this, socket);
+					client.setDaemon(true);
+					client.start();
 					Thread.sleep(50L);
 					map.put(client.getUser(), client);
 					System.out.println("[서버] 접속한 인원 수 : " + map.size());//테스트코드
@@ -71,36 +62,17 @@ public class Server extends Thread {
 		
 		
 		/**
-		 * 클라이언트로부터 파일을 받는 메소드
-		 */
-		public void run() {
-			try {
-				FileServerManager filemanager = new FileServerManager(this, socket);
-				filemanager.setDaemon(true);
-				filemanager.start();
-			}catch(Exception e) {
-				e.printStackTrace();
-				System.out.println("[서버] 클라이언트 접속 실패");
-			}
-		}
-		
-		/**
 		 * 전체에게 메시지를 전송하는 기능
 		 * @param text 보내는 메시지
 		 */
 		public void broadcast(String userID, String text) {
+//			System.out.println("[서버] 메시지를 브로드캐스트 합니다");// 테스트코드
 			try {
 				for ( String key : map.keySet() ) {
 //				    System.out.println("[서버] 접속 ID : " + key); // 테스트코드
 //				    System.out.println("[서버] socket정보 : " + map.get(key)); // 테스트코드
-//					if(!key.equals(userID))
-						map.get(key).send(userID, text);
+					map.get(key).send(userID, text);
 				}
-//				for(ClientInfo client : list) {
-//					System.out.println("[서버] 리스트꺼냄 : " + client.getName()); //테스트코드
-//					System.out.println("[서버] text : " + text); //테스트코드
-//					client.send(text);
-//				}
 			}catch(Exception e) {
 				e.printStackTrace();
 				System.out.println("[서버] 브로드캐스트 실패");
@@ -109,21 +81,18 @@ public class Server extends Thread {
 
 		
 		/**
-		 * 클라이언트에게 파일을 전송하는 메소드
+		 * 클라이언트에게 파일이름을 전송하는 메소드
 		 */
-		public void fileBroadcast(String userID, String fileName, byte[] data) {
+		public void fileNameBroadcast(String userID, String fileName) {
+//			System.out.println("[서버] 파일이름을 브로드캐스트 합니다");// 테스트코드
 			try {
 				for ( String key : map.keySet() ) {
-				    System.out.println("[서버] 접속 ID : " + key); // 테스트코드
-				    System.out.println("[서버] socket정보 : " + map.get(key)); // 테스트코드
-					if(!key.equals(userID))
-						map.get(key).sendFile(userID, fileName, data); 
+//				    System.out.println("[서버] 접속 ID : " + key); // 테스트코드
+//				    System.out.println("[서버] socket정보 : " + map.get(key)); // 테스트코드
+					if(!key.equals(userID)) {
+						map.get(key).sendFileName(userID, fileName);
+					}
 				}
-//				for(ClientInfo client : list) {
-//					System.out.println("[서버] 리스트꺼냄 : " + client.getName()); //테스트코드
-//					System.out.println("[서버] text : " + text); //테스트코드
-//					client.send(text);
-//				}
 			}catch(Exception e) {
 				e.printStackTrace();
 				System.out.println("[서버] 브로드캐스트 실패");
@@ -132,10 +101,41 @@ public class Server extends Thread {
 		
 		
 		/**
-		 * 테스트용 메인
+		 * 클라이언트에게 파일내용을 전송하는 메소드
+		 */
+		public void fileBroadcast(String userID, byte[] data, int size) {
+//			System.out.println("[서버] 파일내용을 브로드캐스트 합니다");// 테스트코드
+			try {
+				for ( String key : map.keySet() ) {
+//				    System.out.println("[서버] 접속 ID : " + key); // 테스트코드
+//				    System.out.println("[서버] socket정보 : " + map.get(key)); // 테스트코드
+					if(!key.equals(userID)) {
+						map.get(key).sendFile(data, size);
+					}
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("[서버] 브로드캐스트 실패");
+			}
+		}
+		
+		
+		/**
+		 * 대화방 나가기 메소드
+		 */
+		public void chatExit(String userID) {
+			map.remove(userID);
+			System.out.println("[서버] 접속한 인원 수 : " + map.size());//테스트코드
+			for ( String key : map.keySet() ) {
+			    System.out.println("[서버] 접속한 사람 : ID : " + key +" / socket정보 : " + map.get(key));//테스트코드
+			}
+		}
+		
+		/**
+		 * 서버시작 메인
 		 */
 		public static void main(String[] args) {
-			Server server = new Server();
+			ChatServer server = new ChatServer();
 			server.work();
 		}
 }

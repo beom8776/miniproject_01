@@ -1,4 +1,4 @@
-package mini.mes.file;
+package mini.mes.chatfile;
 
 import java.io.File;
 import javax.swing.JFileChooser;
@@ -55,7 +55,7 @@ public class Dialog extends Thread{
         chooser.setCurrentDirectory(new File(dir));// 기본폴더 설정
         int option = chooser.showSaveDialog(chooser);
         if(option != JFileChooser.APPROVE_OPTION) {
-			System.exit(0);
+//			System.exit(0);
 		}
         path = chooser.getSelectedFile().getAbsolutePath() + "."+ ext;
 	}
@@ -74,8 +74,12 @@ public class Dialog extends Thread{
 	 * 파일 열기 창 실행 메소드
 	 */
 	 public void openFile() {
-		chooser.showOpenDialog(chooser);
+		int option = chooser.showOpenDialog(chooser);
+		if(option != JFileChooser.APPROVE_OPTION) {
+//			System.exit(0);
+		}
 		path = chooser.getSelectedFile().getAbsolutePath();
+		System.out.println("[클라이언트] path : " + path);
 	 }
 	 
 }
