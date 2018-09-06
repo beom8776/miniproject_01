@@ -1,8 +1,6 @@
 package mini.mes.chatting;
 
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -25,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import mini.mes.chatfile.FileManager;
 import mini.mes.net.ChatClient;
  
@@ -41,7 +38,7 @@ public class ChattingGui extends JFrame{
 	 */
 	FileManager file = new FileManager("chatDB.db");
 		
-		
+	
 	/**
 	 * 변수 생성
 	 */
@@ -382,7 +379,7 @@ public class ChattingGui extends JFrame{
 	 * @param text 상대가 보낸 메시지
 	 */
 	public void systemMessage(String text) {
-		area.append("[시스템] : " + text);
+		area.append("[시스템] : " + text + "\n");
 		area.setCaretPosition(area.getDocument().getLength());
 	}
 	
