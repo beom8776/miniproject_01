@@ -10,6 +10,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import mini.mes.net.Board;
+
 import java.io.*;
 
 /**
@@ -23,7 +26,7 @@ public class FileManager extends Thread {
 	 * 변수 생성
 	 */
 	private File target;
-	private int port = 5000;
+	private int port = Board.MAIN_PORTNUMBER;
 	
 	
 	/**

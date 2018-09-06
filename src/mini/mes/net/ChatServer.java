@@ -14,7 +14,6 @@ public class ChatServer extends Thread {
 		/**
 		 * 변수 생성
 		 */
-	
 		private ServerSocket serverSocket = null;
 		private Socket socket = null;
 		private Map<String, ChatServerManager> map;

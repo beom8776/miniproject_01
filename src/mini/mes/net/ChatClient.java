@@ -1,5 +1,6 @@
 package mini.mes.net;
 
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -10,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import javax.swing.JOptionPane;
-import mini.mes.chatfile.Board;
 import mini.mes.chatfile.Dialog;
 import mini.mes.chatting.ChattingGui;
 
@@ -98,34 +98,47 @@ public class ChatClient extends Thread{
 				
 				//파일일 경우
 				if(text.equals("[fileSend]")) {
-					System.out.println("[" + user + "] 파일 받기를 시작합니다");//테스트코드
+					
+					//파일이름 받기
 					String fileName = dis.readUTF();
 					System.out.println("[" + user + "] 받은 파일이름 = " + fileName);//테스트코드
-					int pos = fileName.lastIndexOf( "." );
-					String ext = fileName.substring( pos + 1 );
 					
-					//저장할 경로 및 파일 이름 지정 기능
-					Dialog sd = new Dialog(baseDir, ext);
-					String path = sd.getPath();
-					File f = new File(path);
-					System.out.println("[" + user + "] 저장할 경로 = " + f);//테스트코드
+					//파일 수신 확인 창
+					int option = JOptionPane.showConfirmDialog(chat, fileName + " 파일을 수신하겠습니까?", "파일 수신 확인", JOptionPane.YES_NO_OPTION);
+					if(option == 0) {
+						System.out.println("[" + user + "] 파일 받기를 시작합니다");//테스트코드
 
-					//파일 내용 받기
-					bos = new BufferedOutputStream(new FileOutputStream(f));
-					byte[] data = new byte[1024];
-					int size;
-//					while ((size = dis.read(data)) != -1) {
-					while (true) {
-						size = dis.read(data);
-//						System.out.println("[수신 클라이언트] size = " + size);//테스트코드
-						bos.write(data, 0, size);
-						bos.flush();
-						if(size != 1024) break;
+						int pos = fileName.lastIndexOf( "." );
+						String ext = fileName.substring( pos + 1 );
+						
+						//저장할 경로 및 파일 이름 지정 기능
+						Dialog sd = new Dialog(baseDir, ext);
+						String path = sd.getPath();
+						File f = new File(path);
+						System.out.println("[" + user + "] 저장할 경로 = " + f);//테스트코드
+
+						//파일 내용 받기
+						bos = new BufferedOutputStream(new FileOutputStream(f));
+						byte[] data = new byte[1024];
+						int size;
+//						while ((size = dis.read(data)) != -1) {
+						while (true) {
+							size = dis.read(data);
+//							System.out.println("[수신 클라이언트] size = " + size);//테스트코드
+							bos.write(data, 0, size);
+							bos.flush();
+							if(size != 1024) break;
+						}
+						bos.close();
+//						dis.close();
+//		            	JOptionPane.showMessageDialog(null, "파일 수신이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
+						chat.systemMessage(user + "님의 파일 수신이 완료되었습니다");
+				        System.out.println("[" + user + "] 파일 수신 완료");//테스트코드
 					}
-					bos.close();
-//					dis.close();
-//	            	JOptionPane.showMessageDialog(null, "파일 수신이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
-			        System.out.println("[" + user + "] 파일 수신 완료");//테스트코드
+					else {
+						chat.systemMessage(user + "님이 파일 수신을 거부하였습니다.");
+					}
+
 				}
 				
 				//메시지일 경우
@@ -145,6 +158,7 @@ public class ChatClient extends Thread{
 	 */
 	public void fileSend() {
 		try {
+			chat.systemMessage(user + "님이 파일을 전송합니다");
 			//보낼 파일 선택 후 준비
 			Dialog dialog = new Dialog();
 			String fileName = dialog.getPath();
