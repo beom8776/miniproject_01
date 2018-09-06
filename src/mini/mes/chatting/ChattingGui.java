@@ -1,6 +1,8 @@
 package mini.mes.chatting;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -115,9 +117,6 @@ public class ChattingGui extends JFrame{
 		this.flag = flag;
 	}
 	
-	//파일 관련
-	private File sendFile;
-	private static int port = 50000;
 	
 	/**
 	 * 생성자
@@ -136,10 +135,6 @@ public class ChattingGui extends JFrame{
 		//창 옵션 설정
 		this.setLocationByPlatform(true);
 		this.setResizable(false);
-		
-		//스크롤 옵션 설정
-		
-		
 		
 //		this.setVisible(true);
 
@@ -376,10 +371,21 @@ public class ChattingGui extends JFrame{
 		String text =this.inputField.getText();
 		client.send(text);
 		inputField.setText("");
-		area.setCaretPosition(area.getDocument().getLength()); 
+		area.setCaretPosition(area.getDocument().getLength());
 
 	}
 
+	
+	/**
+	 * 시스템 메시지를 화면에 출력하는 메소드
+	 * @param userID 보낸 사용자 ID
+	 * @param text 상대가 보낸 메시지
+	 */
+	public void systemMessage(String text) {
+		area.append("[시스템] : " + text);
+		area.setCaretPosition(area.getDocument().getLength());
+	}
+	
 	
 	/**
 	 * 채팅을 화면에 출력하는 메소드
