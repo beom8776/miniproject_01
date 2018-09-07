@@ -30,6 +30,9 @@ class JoinWindow extends JFrame {
 	private JButton btn0 = new JButton("가　입");
 	private JButton btn1 = new JButton("지우기");
 	
+	private String kind = null;	// Server에 어떤 처리 작업을 할것인지 지정해주는 변수
+
+	
 	public void display() {
 		con.setLayout(null);
 		setContentPane(con);
@@ -140,8 +143,12 @@ class JoinWindow extends JFrame {
 			 * Server에 회원정보 전송
 			 */
 			try {
-				Socket socket = new Socket("localhost", 50010);
+				Socket socket = new Socket("localhost", 10001);
 				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+				kind = "회원가입";
+				oos.writeObject(kind);
+				oos.flush();
+				
 				oos.writeObject(mb);
 				oos.flush();
 				oos.close();

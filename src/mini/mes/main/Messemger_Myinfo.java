@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,6 +18,8 @@ import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import mini.mes.join.Member;
 
 
 /**
@@ -48,6 +51,9 @@ public class Messemger_Myinfo extends JPanel{
 	private JPanel etcPan = new JPanel();
 	private JButton listmanager = new JButton("친구관리");
 	private JButton membersOut = new JButton("회원탈퇴");
+	
+	private String kind = null;	// Server에 어떤 처리 작업을 할것인지 지정해주는 변수
+	private Member mb = new Member();
 	
 	
 	private Date date = new Date();
@@ -120,11 +126,12 @@ public class Messemger_Myinfo extends JPanel{
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & PNG파일", "jpg", "png");
 			imageFile.setFileFilter(filter);
 
-		/**
-		 * 프로필 사진 변경
-		 * 사진 변경후 해당 회원의 DB에 등록시킨다. (작업중)
-		 */
 		imgChange.addActionListener(e->{
+			/**
+			 * 프로필 사진 변경
+			 * 사진 변경후 해당 회원의 DB에 등록시킨다. (작업중)
+			 */
+			
 //			이미지 사이즈 변경 후 불러오기
 			int returnVal = imageFile.showOpenDialog(Messemger_Myinfo.this);
 			imageFile.setMultiSelectionEnabled(false);
@@ -135,6 +142,19 @@ public class Messemger_Myinfo extends JPanel{
 				Image changedImg = origin.getScaledInstance(100, 140, Image.SCALE_SMOOTH);
 				mypicture.setIcon(new ImageIcon(changedImg));
 			}
+			
+			/**
+			 * 변경된 이미지를 Server 나의 DB에 전송
+			 * 이미지 이름은 나의 ID.png로 저장한다.
+			 */
+			try {
+				Socket socket = new Socket("localhost", 10001);
+				ObjectOutputStream objectOut = new ObjectOutputStream(socket.getOutputStream());
+				
+				
+				
+			} catch (Exception e2) {e2.printStackTrace();}
+			
 			
 			/**
 			 * 이미지 변경 후 DB에 저장
@@ -186,22 +206,26 @@ public class Messemger_Myinfo extends JPanel{
 			reviseBt.setVisible(true);
 			textArea.setEditable(false);
 			
+			mb.setMent(textArea.getText());
+			System.out.println("[[내용확인]] : [mb.setMent = "+mb.getMent()+"]");
+			
 			/**
 			 * 상태메시지 Server DB로 전송
 			 */
-
 			String ip = "127.0.0.1";
 			ObjectOutputStream objectOut;
-			DataOutputStream dout;
 				try {
-					Socket socket = new Socket("localhost", 50010);
-					objectOut = new ObjectOutputStream(socket.getOutputStream());
-					objectOut.writeObject(textArea.getText());
-//					dout = new DataOutputStream(socket.getOutputStream());
+					Socket socket = new Socket("localhost", 10001);
+					ObjectOutputStream objectIn = new ObjectOutputStream(socket.getOutputStream());
+					kind = "상태메시지";
+					objectIn.writeObject(kind);
+					objectIn.flush();
 					
-					objectOut.flush();
-					objectOut.close();
-					} catch (IOException e1) {e1.printStackTrace();}	
+					objectIn.writeObject(mb);
+					System.out.println("mb : " + mb.getMent());
+					objectIn.flush();
+					objectIn.close();
+					} catch (IOException e1) {e1.printStackTrace();}
 		});
 		
 		/**
