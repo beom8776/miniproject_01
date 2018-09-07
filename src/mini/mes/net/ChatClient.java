@@ -1,6 +1,5 @@
 package mini.mes.net;
 
-import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -82,7 +81,23 @@ public class ChatClient extends Thread{
    			System.out.println("[" + user + "] 서버로 메시지 전송 실패");
 		}
 	}
-		
+	
+	
+	/**
+	 * 시스템메시지를 서버로 보내는 메소드
+	 * @param text 시스템 메시지
+	 */
+	public void systemSend(String text) {
+		try {
+			dos.writeUTF("[system]" + text);
+			dos.flush();
+			System.out.println("[시스템메시지] " + text + "를 서버로 전송");
+			System.out.println();//테스트코드
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("[" + user + "] 서버로 시스템 메시지 전송 실패");
+		}
+	}
 	
 	/**
 	* 반복해서 메시지를 수신하는 메소드
@@ -132,13 +147,18 @@ public class ChatClient extends Thread{
 						bos.close();
 //						dis.close();
 //		            	JOptionPane.showMessageDialog(null, "파일 수신이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
-						chat.systemMessage(user + "님의 파일 수신이 완료되었습니다");
-				        System.out.println("[" + user + "] 파일 수신 완료");//테스트코드
+//				        chat.systemMessage("파일 수신 완료");
 					}
-					else {
-						chat.systemMessage(user + "님이 파일 수신을 거부하였습니다.");
+					else if(option == 1){
+//						chat.systemMessage(fileName + "파일의 수신을 거부하였습니다");
+						this.systemSend(user + "님이 파일의 수신을 거부하였습니다");
 					}
 
+				}
+				
+				//시스템 메시지일 경우
+				else if (text.startsWith("[system]")) {
+					chat.systemMessage(text.substring(8));
 				}
 				
 				//메시지일 경우
@@ -146,6 +166,7 @@ public class ChatClient extends Thread{
 					chat.inputChat(sendUserID, text);
 				}
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("[" + user + "] 메시지 / 파일 수신 실패");
@@ -158,7 +179,6 @@ public class ChatClient extends Thread{
 	 */
 	public void fileSend() {
 		try {
-			chat.systemMessage(user + "님이 파일을 전송합니다");
 			//보낼 파일 선택 후 준비
 			Dialog dialog = new Dialog();
 			String fileName = dialog.getPath();

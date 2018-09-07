@@ -77,7 +77,7 @@ public class ChatServerManager extends Thread {
 //					}
 					while (true) {
 						size = dis.read(data);
-						System.out.println("[서버] size = " + size);//테스트코드
+//						System.out.println("[서버] size = " + size);//테스트코드
 						server.fileBroadcast(userID, data, size);
 						if(size != 1024) break;
 					}
@@ -107,6 +107,7 @@ public class ChatServerManager extends Thread {
 		try {
 			dos.writeUTF(userID);
 			dos.flush();
+			System.out.println("[서버] 에서 보내주는 userID : " + userID);//테스트코드
 			
 			dos.writeUTF(text);
 			dos.flush();
@@ -156,7 +157,7 @@ public class ChatServerManager extends Thread {
             dos.write(data, 0, size);
             dos.flush();
 //            dos.close();
-            System.out.println("[서버] 클라이언트로 파일 전송 완료");
+//            System.out.println("[서버] 클라이언트로 파일 전송 완료");
 		}catch(Exception e) {
 			e.printStackTrace();
 			System.out.println("[서버] 클라이언트로 파일 전송 실패");
