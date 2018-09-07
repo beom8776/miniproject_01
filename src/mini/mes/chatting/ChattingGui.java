@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,8 +24,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
 import mini.mes.chatfile.FileManager;
 import mini.mes.net.ChatClient;
+import mini.mes.nettest.*;
  
 /**
  * 채팅방 클래스
@@ -81,6 +84,7 @@ public class ChattingGui extends JFrame{
 	
 	//클라이언트 레퍼런스
 	private ChatClient client;
+	private ChatClient2 client2;//테스트용
 	
 	
 	//대화상대 추가를 위한 변수
@@ -118,8 +122,37 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 생성자
 	 */
-	public ChattingGui(ChatClient client) {
-		this.client = client;
+//	public ChattingGui(ChatClient client) {
+//		this.client = client;
+//		
+//		display();
+//		imageCut();
+//		menuIcon();
+//		menu();
+//		event();
+//		
+//		this.setTitle("306 Messenger");
+//		this.setSize(500, 730);
+//		//창 옵션 설정
+//		this.setLocationByPlatform(true);
+//		this.setResizable(false);
+//		
+////		this.setVisible(true);
+//
+//		//대화 내용 불러오기
+//		buf = file.fileInput();
+//		area.setText(buf.toString());
+//		
+//		
+//	}
+	
+	
+	
+	/**
+	 * 테스트용 생성자
+	 */
+	public ChattingGui(ChatClient2 client2) {
+		this.client2 = client2;
 		
 		display();
 		imageCut();
@@ -141,7 +174,6 @@ public class ChattingGui extends JFrame{
 		
 		
 	}
-	
   
 	/**
 	 *화면 배치 메소드
@@ -314,7 +346,8 @@ public class ChattingGui extends JFrame{
 		 * 파일 전송 버튼 이벤트
 		 */
 		fileSendBt.addActionListener(e->{
-			client.fileSend();
+//			client.fileNameSend();
+			client2.fileNameSend();
 		});
 		
 		
@@ -366,7 +399,8 @@ public class ChattingGui extends JFrame{
 	 */
 	public void inputChat() {
 		String text =this.inputField.getText();
-		client.send(text);
+//		client.send(text);
+		client2.send(text);
 		inputField.setText("");
 		area.setCaretPosition(area.getDocument().getLength());
 

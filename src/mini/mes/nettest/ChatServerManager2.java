@@ -1,4 +1,4 @@
-package mini.mes.net;
+package mini.mes.nettest;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,16 +9,16 @@ import java.net.Socket;
  * 서버의 여러 기능을 수행하는 클래스
  * @author 최범석
  */
-public class ChatServerManager extends Thread {
+public class ChatServerManager2 extends Thread {
 	
 	/**
 	 * 변수 생성
 	 */
 	private Socket socket;
-	private ChatServer server;
+	private ChatServer2 server;
 	private DataOutputStream dos;
 	private DataInputStream dis;
-	private String user = null;
+	private String user;
 
 	
 	/**
@@ -26,7 +26,7 @@ public class ChatServerManager extends Thread {
 	 * @param server 서버 클래스
 	 * @param socket 소켓정보
 	 */
-	public ChatServerManager(ChatServer server, Socket socket) {
+	public ChatServerManager2(ChatServer2 server, Socket socket) {
 			this.server = server;
 			this.socket = socket;
 	
@@ -57,7 +57,6 @@ public class ChatServerManager extends Thread {
 			this.setUser(userID);
 			System.out.println("[서버] " + socket + " : " + this.getUser() + "님 접속");//테스트코드
 			
-			
 			while(true) {
 				//보낸 메시지 불러오기
 				String text = dis.readUTF();
@@ -65,31 +64,31 @@ public class ChatServerManager extends Thread {
 
 				//파일일 경우
 				if(text.equals("[fileSend]")) {
-					System.out.println("[서버] 파일을 수신합니다");
+					System.out.println("[서버] 파일이름을 수신합니다");
 					String fileName = dis.readUTF();
 					System.out.println("[서버] 받은 fileName : " + fileName);//테스트코드
 					server.fileNameBroadcast(userID, fileName);
+					server.setFileSendUser(this.getUser());
 				}
 				
-				//파일 수신
+				//파일 수신 사인 받기
 				else if(text.equals("[fileYes]")) {
-					System.out.println("[서버] 파일 내용을 수신 합니다");
+					System.out.println("[서버] " + server.getFileSendUser() + "에게 파일 송신 요청을 합니다");//테스트코드
+					server.fileSendRequest(server.getFileSendUser(), userID , text);
+				}
+				
+				//파일 수신 기능 실행
+				else if(text.equals("[fileReceive]")) {
 					byte[] data = new byte[1024];
 					int size = 0;
 					while (true) {
 						size = dis.read(data);
-//						System.out.println("[서버] size = " + size);//테스트코드
-//						server.fileBroadcast(userID, data, size);
-						this.sendFile(data, size);
+						System.out.println("[서버] size = " + size);//테스트코드
+						this.sendFile(userID, data, size);
 						if(size != 1024) break;
 					}
 //					dis.close();
 		            System.out.println("[서버] 파일 수신 완료");
-				}
-				
-				else if(text.equals("[fileNo]")) {
-					System.out.println("[서버] 파일 수신이 거부되었음을 알려줍니다");
-					server.broadcast(userID, "[fileNo]");
 				}
 				
 				//일반 메시지일 경우
@@ -100,6 +99,7 @@ public class ChatServerManager extends Thread {
 			} 
 		}
 		catch (IOException e) {
+			e.printStackTrace();
 			server.chatExit(this.getUser());
 			System.out.println("[서버] " + this.getUser() + "님이 대화방을 나가셨습니다");
 		}
@@ -125,6 +125,26 @@ public class ChatServerManager extends Thread {
 		}
 	}
 
+	
+	/**
+	 * 받은 메시지를 클라이언트에게 보내는 메소드
+	 * @param text 받은 메시지
+	 */
+	public void sendFileRequest(String userID, String text) {
+		try {
+			dos.writeUTF(userID);
+			dos.flush();
+			System.out.println("[서버] 파일을 보낼 userID : " + userID);//테스트코드
+			
+			dos.writeUTF(text);
+			dos.flush();
+			System.out.println("[서버] 에서 보내주는 text : " + text);//테스트코드
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("[서버] 메시지 출력 실패");
+		}
+	}
+	
 	
 	/**
 	 * 받은 파일이름을 클라이언트에게 보내는 메소드
@@ -158,9 +178,13 @@ public class ChatServerManager extends Thread {
 	 * @param data byte[] 정보
 	 * @param size 보내는 byte[]의 길이
 	 */
-	public void sendFile(byte[] data, int size) {
+	public void sendFile(String userID, byte[] data, int size) {
 		try {
-            //파일내용 보내기
+			//사용자ID 보내기
+			dos.writeUTF(userID);
+			dos.flush();
+			
+			//파일내용 보내기
             dos.write(data, 0, size);
             dos.flush();
 //            dos.close();
