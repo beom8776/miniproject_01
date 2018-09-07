@@ -1,7 +1,7 @@
-package mini.mes.join;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+package mini.mes.mbServer;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Calendar;
 
 public class Member implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -11,6 +11,7 @@ public class Member implements Serializable {
 	private String name;
 	private String phone;
 	private Calendar birth;
+	
 	private String ment;
 	
 	
@@ -55,19 +56,28 @@ public class Member implements Serializable {
 	public void setMent(String ment) {
 		this.ment = ment;
 	}
-
+	
+	/**
+	 * ������ ȸ������ ���� ����
+	 * @throws IOException
+	 */
 //	public void save() {
 	
 //		File target = new File("join", this.getId() + ".db");
 //		FileOutputStream fos = new FileOutputStream(target);
+	
 //		ObjectOutputStream oos = new ObjectOutputStream(fos);
 //		oos.writeObject(this);
+		
+		
+		
+		
 //	}
 	
 	@Override
 	public String toString() {
-		String str = birth.get(Calendar.YEAR) + "년 "
-				+ (birth.get(Calendar.MONTH) + 1) + "월 " + birth.get(Calendar.DATE) + "일";
+		String str = birth.get(Calendar.YEAR) + "�� "
+				+ (birth.get(Calendar.MONTH) + 1) + "�� " + birth.get(Calendar.DATE) + "��";
 		
 		return "Member\nid\t" + getId() + " \npw\t" + getPw()
 		+ " \nname\t" + getName() + " \nphone\t" + getPhone()
