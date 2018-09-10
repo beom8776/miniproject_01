@@ -77,7 +77,14 @@ class Messenger_List extends JPanel{
 	}
 	
 	public void event() {
-		
+//		startfr1.addActionListener(e->{
+//			String myID = "야호";
+//			List<String> list = new ArrayList<>();
+//			list.add(frname1.getText());
+//			list.add("호랑나비");
+//			list.add(myID);
+//			ChatClient client = new ChatClient(list, myID);
+//		});
 	}
 }
 

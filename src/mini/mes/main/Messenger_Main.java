@@ -2,12 +2,9 @@ package mini.mes.main;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
 import javax.swing.*;
 
 /**
@@ -181,7 +178,8 @@ class Window_Login extends JFrame{
  */
 public class Messenger_Main {
 	public static void main(String[] args) {	
-		Window_Login login = new Window_Login();
+//		Window_Login login = new Window_Login();
+		Messenger_m login = new Messenger_m();
 		
 
 	}

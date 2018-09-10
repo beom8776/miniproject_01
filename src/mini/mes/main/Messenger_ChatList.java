@@ -1,8 +1,13 @@
 package mini.mes.main;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.util.List;
+import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 /**
@@ -23,8 +28,6 @@ class Messenger_ChatList extends JPanel{
 	 * 
 	 */
 	
-	
-	
 	private JPanel frList = new JPanel();
 	private JPanel friend1 = new JPanel();
 	
@@ -32,7 +35,7 @@ class Messenger_ChatList extends JPanel{
 	private JLabel frpictur1 = new JLabel(fricon1);
 	private JLabel frname1 = new JLabel("홍길동");
 	private JLabel frment1 = new JLabel("내가 누구죠? 그게 정말 너무 궁금해요~~~ 알죠?");
-	private JButton startfr1 = new JButton("1:1대화");
+	private JButton startfr1 = new JButton("입장");
 	
 	private JPanel friend2 = new JPanel();
 	
@@ -40,7 +43,7 @@ class Messenger_ChatList extends JPanel{
 	private JLabel frpictur2 = new JLabel(fricon2);
 	private JLabel frname2 = new JLabel("홍진영");
 	private JLabel frment2 = new JLabel("네네네네네 배터리");
-	private JButton startfr2 = new JButton("1:1대화");
+	private JButton startfr2 = new JButton("입장");
 
 	
 	public Messenger_ChatList() {

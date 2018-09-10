@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 import javax.swing.JOptionPane;
-import mini.mes.chatfile.Dialog;
 import mini.mes.chatting.ChattingGui;
 
 /**
