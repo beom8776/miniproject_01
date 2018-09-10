@@ -1,14 +1,14 @@
-package mini.mes.nettest;
+package mini.mes.chatServer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 import javax.swing.JOptionPane;
 import mini.mes.chatfile.Dialog;
 import mini.mes.chatting.ChattingGui;
@@ -17,27 +17,32 @@ import mini.mes.chatting.ChattingGui;
  * 클라이언트 기능 실행 클래스
  * @author 최범석
  */
-public class ChatClient2 extends Thread{
+public class ChatClient extends Thread {
 		
 	/**
 	 * 변수 생성
 	 */
-	private Socket socket;
 	private ChattingGui chat;
+	private Socket socket;
 	private String user;
-	private DataOutputStream dos;
-	private DataInputStream dis;
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
 	private BufferedInputStream bis;
 	private BufferedOutputStream bos;
 	private String baseDir = "C:\\Users\\user\\Documents";
 	private File sendFile;
+	private StringBuffer sb = new StringBuffer();
+	
 	
 	/**
 	 * 생성자
+	 * @param list 채팅방에 속한 사용자 리스트
+	 * @param ID 나의 아이디
 	 */
-	public ChatClient2(){
+	public ChatClient(List<String> list, String myID){
 		try {
-			user = JOptionPane.showInputDialog(null,"아이디 입력"); //테스트코드
+//			user = JOptionPane.showInputDialog(null,"아이디 입력"); //테스트코드
+			user = myID;
 			this.chat = new ChattingGui(this);
 			chat.setVisible(true);
 //			String ip = "192.168.0.9";
@@ -50,18 +55,25 @@ public class ChatClient2 extends Thread{
 			socket = new Socket(serverIP,  Board.MAIN_PORTNUMBER);
 			System.out.println("[" + user + "] " + user + "님이 서버에 연결되었습니다.");//테스트코드
 			
-			this.dos = new DataOutputStream(socket.getOutputStream());
-			this.dis = new DataInputStream(socket.getInputStream());
-			
+			this.oos = new ObjectOutputStream(socket.getOutputStream());
+			this.ois = new ObjectInputStream(socket.getInputStream());
 			//반복 수신기능 시작
 			this.setDaemon(true);
 			this.start();
 			
+			//채팅방에 속한 사용자 리스트 보내기
+			oos.writeInt(list.size());
+			oos.flush();
+			for(Object object : list) {
+				String name = (String)object;
+				oos.writeUTF(name);
+				oos.flush();
+			}
+			
         	//아이디 보내기
-			dos.writeUTF(user);
-			dos.flush();
+			oos.writeUTF(user);
+			oos.flush();
 		} catch (Exception e) {
-			e.printStackTrace();
 			System.out.println("[" + user + "] 서버에 연결 실패");
 		}
 	}
@@ -72,8 +84,8 @@ public class ChatClient2 extends Thread{
 	 */
 	public void send(String text) {
 		try {
-			dos.writeUTF(text);
-			dos.flush();
+			oos.writeUTF(text);
+			oos.flush();
 			System.out.println("[" + user + "] 보낸메시지 : " + text);//테스트코드
 			System.out.println();//테스트코드
 		} catch (Exception e) {
@@ -89,8 +101,8 @@ public class ChatClient2 extends Thread{
 	 */
 	public void systemSend(String text) {
 		try {
-			dos.writeUTF("[system]" + text);
-			dos.flush();
+			oos.writeUTF("[system]" + text);
+			oos.flush();
 			System.out.println("[시스템메시지] " + text + "를 서버로 전송");
 			System.out.println();//테스트코드
 		} catch (Exception e) {
@@ -106,22 +118,24 @@ public class ChatClient2 extends Thread{
 		try {
 			while(true) {
 				System.out.println();//테스트코드
-				String sendUserID = dis.readUTF();
-				String text = dis.readUTF();
+				String sendUserID = ois.readUTF();
+				String text = ois.readUTF();
 				System.out.println("[" + user + "] " + sendUserID + "의 메시지 : " + text);//테스트코드
 				
 				//파일일 경우
 				if(text.equals("[fileSend]")) {
 					
 					//파일이름 받기
-					String fileName = dis.readUTF();
+					String fileName = ois.readUTF();
 					System.out.println("[" + user + "] 받은 파일이름 = " + fileName);//테스트코드
 					
 					//파일 수신 확인 창
 					int option = JOptionPane.showConfirmDialog(chat, fileName + " 파일을 수신하겠습니까?", "파일 수신 확인", JOptionPane.YES_NO_OPTION);
 					if(option == 0) {
+//				    	this.systemSend(user + "님이 파일 수신을 수락하였습니다");
 						System.out.println("[" + user + "] 파일 받기를 시작합니다");//테스트코드
 						this.send("[fileYes]");
+						this.receiveFile(fileName);
 					}
 					else if(option == 1){ 
 //						 System.out.println(user + "님 파일 수신 거부");
@@ -139,23 +153,53 @@ public class ChatClient2 extends Thread{
 				else if (text.equals("[fileYes]")) {
 					System.out.println(sendUserID + "님이 파일 수신을 수락하였습니다.");//테스트코드
 					this.send("[fileReceive]");
+					this.send(sendUserID);
 					this.fileSend();
 				}
+
+				//채팅창을 종료하라는 명령일 경우
+				else if (text.equals("[chatClose]")) {
+					chat.setVisible(false);
+				}
 				
+//				//채팅로그를 보낸다는 명령일 경우
+//				else if (text.equals("[setLog]")) {
+//					this.receiveLog();
+//				}
+						
 				//메시지일 경우
 				else {
 					chat.inputChat(sendUserID, text);
 				}
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("[" + user + "] 메시지 / 파일 수신 실패");
 		}
 	}
 	
-		
-	private void fileReceive(String fileName) {
+
+//	private void receiveLog() {
+//		try {
+//			//파일 내용 받기
+//			byte[] data = new byte[1024];
+//			String s; 
+//			while (true) {
+//				int readBytes = ois.read(data);
+//				s = new String(data, "UTF-8");
+//				sb.append(s);
+//				 if(readBytes != 1024) break;
+//			}
+//			chat.receiveLog(sb);
+//		}catch(Exception e) {
+//			e.printStackTrace();
+//			System.out.println("[" + user + "] 서버로부터 채팅 로그 수신 실패");
+//		}
+//	}
+
+
+	private void receiveFile(String fileName) {
 		try {
 			int pos = fileName.lastIndexOf( "." );
 			String ext = fileName.substring( pos + 1 );
@@ -166,28 +210,32 @@ public class ChatClient2 extends Thread{
 			File f = new File(path);
 			System.out.println("[" + user + "] 저장할 경로 = " + f);//테스트코드
 
-			//파일 내용 받기
-			bos = new BufferedOutputStream(new FileOutputStream(f));
-			byte[] data = new byte[1024];
-			int size;
-//			while (true) {
-//				size = dis.read(data);
-//				System.out.println("[" + user + "] size = " + size);//테스트코드
-//				bos.write(data, 0, size);
-//				bos.flush();
-//				if(size != 1024) break;
-//			}
-			while ((size = dis.read(data)) != -1) {
-				System.out.println("[" + user + "] size = " + size);//테스트코드
-				bos.write(data, 0, size);
-				bos.flush();
-			}
-			bos.close();
-//			dis.close();
-//	    	JOptionPane.showMessageDialog(null, "파일 수신이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
-//			chat.systemMessage(user + "님 파일 수신을 완료하였습니다");
-	    	this.systemSend(user + "님 파일 수신을 완료하였습니다");
 			
+			
+			//파일 크기 받기
+			Long fileSize = ois.readLong();
+			Long totalReadBytes = 0L;
+			int readBytes = 0;
+			
+				//파일 내용 받기
+				bos = new BufferedOutputStream(new FileOutputStream(f));
+				byte[] data = new byte[1024];
+				while (true) {
+					readBytes = ois.read(data);
+//					System.out.println("[" + user + "] readBytes = " + readBytes);//테스트코드
+					totalReadBytes += readBytes;
+					bos.write(data, 0, readBytes);
+					bos.flush();
+					 System.out.println("[" + user + "] 파일 수신 현황 : " + totalReadBytes + "/"
+	                       + fileSize + " Byte(s) ("
+	                       + (totalReadBytes * 100 / fileSize) + " %)");//테스트코드
+					 if(readBytes != 1024) break;
+				}
+				bos.close();
+//				ois.close();
+		    	JOptionPane.showMessageDialog(null, "파일 수신이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
+//				chat.systemMessage(user + "님 파일 수신을 완료하였습니다");
+				System.out.println(user + "님 파일 수신 완료");
 		}catch(Exception e) {
 			e.printStackTrace();
 			System.out.println("[" + user + "] 서버로부터 파일 수신 실패");
@@ -203,20 +251,21 @@ public class ChatClient2 extends Thread{
 			//보낼 파일 선택 후 준비
 			Dialog dialog = new Dialog();
 			String fileName = dialog.getPath();
-			sendFile = new File(fileName);
-			
-			//시스템메시지 전송
-			this.systemSend(user + "님이 파일을 전송합니다");
-			
-            //파일임을 알려주기
-            dos.writeUTF("[fileSend]");
-            dos.flush();
-			System.out.println("[" + user + "] 서버로 " + fileName + "를 보냅니다");//테스트코드
-			
-            //파일이름 보내기
-            dos.writeUTF(sendFile.getName());
-            dos.flush();
-            
+			if(fileName != null) {
+				sendFile = new File(fileName);
+				
+				//시스템메시지 전송
+				this.systemSend(user + "님이 파일을 전송합니다");
+				
+	            //파일임을 알려주기
+	            oos.writeUTF("[fileSend]");
+	            oos.flush();
+
+	            //파일이름 보내기
+	            oos.writeUTF(sendFile.getName());
+	            oos.flush();
+				System.out.println("[" + user + "] 서버로 " + sendFile.getName() + "를 보냅니다");//테스트코드
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			System.out.println("[" + user + "] 서버로 파일 이름 전송 실패");
@@ -235,10 +284,13 @@ public class ChatClient2 extends Thread{
             int readBytes;
             bis = new BufferedInputStream(new FileInputStream(sendFile));
             
+            oos.writeLong(fileSize);
+            oos.flush();
+            
             //파일내용 보내기
             byte[] data = new byte[1024];
             while ((readBytes = bis.read(data)) != -1) {
-                dos.write(data, 0, readBytes);
+                oos.write(data, 0, readBytes);
                 totalReadBytes += readBytes;
                 System.out.println("[" + user + "] 파일 전송 현황 : " + totalReadBytes + "/"
                         + fileSize + " Byte(s) ("
@@ -248,8 +300,8 @@ public class ChatClient2 extends Thread{
 //            	JOptionPane.showMessageDialog(null, "파일 전송이 완료되었습니다", "알림", JOptionPane.INFORMATION_MESSAGE);
                 System.out.println("[" + user + "] 서버로 파일 전송 완료");//테스트코드
             }
-            dos.flush();
-//            dos.close();
+            oos.flush();
+//            oos.close();
             bis.close();
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -259,10 +311,10 @@ public class ChatClient2 extends Thread{
 	
 	
 	/**
-	 * 클라이언트 실행용 메인
+	 * 클라이언트 테스트용 메인
 	 */
-	public static void main(String[] args) {
-		ChatClient2 client = new ChatClient2();
-	}
+//	public static void main(String[] args) {
+//		ChatClient client = new ChatClient();
+//	}
 	
 }

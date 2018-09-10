@@ -9,7 +9,7 @@ import javax.swing.*;
  * @author 김현진
  *
  */
-class Messenger_m extends JFrame{
+class Messenger_m extends JFrame {
 	
 	private JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP);
 	private Messenger_List list = new Messenger_List();

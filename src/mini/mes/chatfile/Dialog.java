@@ -76,10 +76,12 @@ public class Dialog extends Thread{
 	 public void openFile() {
 		int option = chooser.showOpenDialog(chooser);
 		if(option != JFileChooser.APPROVE_OPTION) {
-//			System.exit(0);
+			path = null;
 		}
-		path = chooser.getSelectedFile().getAbsolutePath();
-		System.out.println("[클라이언트] path : " + path);
+		else {
+			path = chooser.getSelectedFile().getAbsolutePath();
+			System.out.println("[클라이언트] path : " + path);
+		}
 	 }
 	 
 }

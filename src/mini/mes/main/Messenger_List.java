@@ -2,14 +2,14 @@ package mini.mes.main;
 
 import java.awt.Color;
 import java.awt.Font;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-
-import mini.mes.net.ChatClient;
+import mini.mes.chatServer.ChatClient;
 
 /**
  * 친구목록 Tab
@@ -17,7 +17,6 @@ import mini.mes.net.ChatClient;
  *
  */
 class Messenger_List extends JPanel{
-	
 	
 	private JPanel frList = new JPanel();
 	private JPanel friend1 = new JPanel();
@@ -82,7 +81,12 @@ class Messenger_List extends JPanel{
 	
 	public void event() {
 		startfr1.addActionListener(e->{
-			ChatClient client = new ChatClient();
+			String myID = "야호";
+			List<String> list = new ArrayList<>();
+			list.add(frname1.getText());
+			list.add("호랑나비");
+			list.add(myID);
+			ChatClient client = new ChatClient(list, myID);
 		});
 	}
 }
