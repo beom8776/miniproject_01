@@ -11,7 +11,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,10 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
-import mini.mes.chatfile.FileManager;
-import mini.mes.net.ChatClient;
-import mini.mes.nettest.*;
+import mini.mes.chatServer.ChatClient;
  
 /**
  * 채팅방 클래스
@@ -39,7 +35,7 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 파일 관리 매니저 인스턴스 생성
 	 */
-	FileManager file = new FileManager("chatDB.db");
+//	FileManager file = new FileManager("chatDB.db");
 		
 	
 	/**
@@ -84,8 +80,6 @@ public class ChattingGui extends JFrame{
 	
 	//클라이언트 레퍼런스
 	private ChatClient client;
-	private ChatClient2 client2;//테스트용
-	
 	
 	//대화상대 추가를 위한 변수
 	private int 		totalfriends;	//사용자의 전체 친구 숫자
@@ -104,7 +98,6 @@ public class ChattingGui extends JFrame{
 	//채팅 메시지 관련
 	private boolean flag = false;
 	private String sendText;
-	private StringBuffer buf;
 	public String getSendText() {
 		return sendText;
 	}
@@ -122,37 +115,8 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 생성자
 	 */
-//	public ChattingGui(ChatClient client) {
-//		this.client = client;
-//		
-//		display();
-//		imageCut();
-//		menuIcon();
-//		menu();
-//		event();
-//		
-//		this.setTitle("306 Messenger");
-//		this.setSize(500, 730);
-//		//창 옵션 설정
-//		this.setLocationByPlatform(true);
-//		this.setResizable(false);
-//		
-////		this.setVisible(true);
-//
-//		//대화 내용 불러오기
-//		buf = file.fileInput();
-//		area.setText(buf.toString());
-//		
-//		
-//	}
-	
-	
-	
-	/**
-	 * 테스트용 생성자
-	 */
-	public ChattingGui(ChatClient2 client2) {
-		this.client2 = client2;
+	public ChattingGui(ChatClient client) {
+		this.client = client;
 		
 		display();
 		imageCut();
@@ -168,13 +132,9 @@ public class ChattingGui extends JFrame{
 		
 //		this.setVisible(true);
 
-		//대화 내용 불러오기
-		buf = file.fileInput();
-		area.setText(buf.toString());
-		
-		
 	}
-  
+	
+	
 	/**
 	 *화면 배치 메소드
 	 */
@@ -267,9 +227,7 @@ public class ChattingGui extends JFrame{
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				if ( exitConfirm == 0 ) {
-					buf = new StringBuffer(area.getText());
-					file.fileOutput(buf);
-					System.exit(0);
+					dispose();
 				}
 			}
 		};
@@ -346,8 +304,7 @@ public class ChattingGui extends JFrame{
 		 * 파일 전송 버튼 이벤트
 		 */
 		fileSendBt.addActionListener(e->{
-//			client.fileNameSend();
-			client2.fileNameSend();
+			client.fileNameSend();
 		});
 		
 		
@@ -395,15 +352,22 @@ public class ChattingGui extends JFrame{
 	
 	
 	/**
+	 * 불러온 채팅 로그를 채팅창에 입력 하는 메소드
+	 */
+	public void receiveLog(StringBuffer sb) {
+		this.area.setText(sb.toString());
+		area.setCaretPosition(area.getDocument().getLength());
+	}
+	
+	
+	/**
 	 * 채팅 입력 메소드
 	 */
 	public void inputChat() {
 		String text =this.inputField.getText();
-//		client.send(text);
-		client2.send(text);
+		client.send(text);
 		inputField.setText("");
 		area.setCaretPosition(area.getDocument().getLength());
-
 	}
 
 	
