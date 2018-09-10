@@ -13,7 +13,6 @@ public class AddTalkerDialog extends JDialog {
 	
 	private JTextArea	area = new JTextArea();
 	private JScrollPane	js = new JScrollPane(area);
-//	private JCheckBox[] friends;
 	private JCheckBox[] friends = new JCheckBox[10];
 	private JButton		addbt = new JButton("친구추가");
 	private JButton		cancel= new JButton("취소");
@@ -27,8 +26,7 @@ public class AddTalkerDialog extends JDialog {
 	}
 	
 	public void showDialog() {
-//		totalArry(total_friendsNo, talkerNo);
-		friendsArray();
+		checkboxArray();
 		display();
 		event();
 		
@@ -41,25 +39,11 @@ public class AddTalkerDialog extends JDialog {
 		this.setVisible(true);
 	}
 	
-	public void friendsArray() {
+	public void checkboxArray() {
 		for(int i = 0; i < friends.length; i++) {
 			friends[i] = new JCheckBox("name"+"#"+"addid"+i);
 		}
 	}
-	
-//	public void setArry() {
-//		totalArry();
-//		
-//	}
-	/**
-	 * 대화상대 추가 가능한 친구 숫자만큼 체크박스 배열 생성 
-	 * @param total_friendsNo -전체 친구의 숫자
-	 * @param talkerNo -현대 대화하고 있는 대화상대의 숫자
-	 */
-//	public void totalArry() {
-//		this.friends = new JCheckBox[gui.addTalkers().length];
-//		
-//	}
 	
 	public void display() {
 		
