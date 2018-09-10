@@ -15,6 +15,9 @@ public class JoinField extends JFrame {
 	JTextField tfPhone2 = new JTextField(10);
 	JTextField tfPhone3 = new JTextField(10);
 	
+	/**
+	 * ID, 이름, 전화번호 검사 이벤트
+	 */
 	public void event() {
 		tf[0] = this.tfId;
 		tf[1] = this.tfName;

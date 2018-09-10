@@ -1,22 +1,29 @@
 package mini.mes.main;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
-import mini.mes.chatServer.ChatClient;
 
 /**
- * 친구목록 Tab
+ * 채팅목록 Tab
  * @author 김현진
  *
  */
-class Messenger_List extends JPanel{
+class Messenger_ChatList extends JPanel{
+	
+	
+	/**
+	 * 
+	 * 
+	 * 현재 클래스 전체 수정 필요
+	 * [작업준비중]
+	 * 
+	 * 
+	 * 
+	 */
+	
+	
 	
 	private JPanel frList = new JPanel();
 	private JPanel friend1 = new JPanel();
@@ -36,7 +43,7 @@ class Messenger_List extends JPanel{
 	private JButton startfr2 = new JButton("1:1대화");
 
 	
-	public Messenger_List() {
+	public Messenger_ChatList() {
 		this.event();
 		this.setLayout(null);
 		
@@ -80,14 +87,7 @@ class Messenger_List extends JPanel{
 	}
 	
 	public void event() {
-		startfr1.addActionListener(e->{
-			String myID = "야호";
-			List<String> list = new ArrayList<>();
-			list.add(frname1.getText());
-			list.add("호랑나비");
-			list.add(myID);
-			ChatClient client = new ChatClient(list, myID);
-		});
+		
 	}
 }
 

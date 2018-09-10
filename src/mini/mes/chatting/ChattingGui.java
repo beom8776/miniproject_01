@@ -26,9 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import mini.mes.file.FileManager;
-import mini.mes.file.ReceiveClient;
-import mini.mes.file.SendClient;
+import mini.mes.chatServer.ChatClient;
  
 /**
  * 채팅방 클래스
@@ -40,9 +38,9 @@ public class ChattingGui extends JFrame{
 	/**
 	 * 파일 관리 매니저 인스턴스 생성
 	 */
-	FileManager file = new FileManager("chatDB.db");
+//	FileManager file = new FileManager("chatDB.db");
 		
-		
+	
 	/**
 	 * 변수 생성
 	 */
@@ -81,9 +79,12 @@ public class ChattingGui extends JFrame{
 	private ImageIcon[] icon = new ImageIcon[10];					//이모티콘 메뉴의 하위메뉴에 들어가는 이미지배열
 	private String[]	emoticonTitle = {"[lion1]","[lion2]","[lion3]",
 			"[lion4]","[lion5]","[mugi1]",
-			"[mugi2]","[mugi3]","[mugi4]","[sinanda]"};						//이모티콘 메뉴의 하위메뉴 타이틀
+			"[mugi2]","[mugi3]","[mugi4]","[sinan]"};						//이모티콘 메뉴의 하위메뉴 타이틀
 	private Font		f1 = new Font("", Font.BOLD, 10);	//10사이즈 글씨 폰트
 	private Font		f2 = new Font("", Font.BOLD, 20);	//20사이즈 글씨 폰트
+	
+	//클라이언트 레퍼런스
+	private ChatClient client;
 	
 	//대화상대 추가를 위한 변수
 	private int 		totalfriends;	//사용자의 전체 친구 숫자
@@ -104,7 +105,6 @@ public class ChattingGui extends JFrame{
 	//채팅 메시지 관련
 	private boolean flag = false;
 	private String sendText;
-	private StringBuffer buf;
 	public String getSendText() {
 		return sendText;
 	}
@@ -118,14 +118,13 @@ public class ChattingGui extends JFrame{
 		this.flag = flag;
 	}
 	
-	//파일 관련
-	private File sendFile;
-	private static int port = 50000;
 	
 	/**
 	 * 생성자
 	 */
-	public ChattingGui() {
+	public ChattingGui(ChatClient client) {
+		this.client = client;
+		
 		display();
 		imageCut();
 		menuIcon();
@@ -140,14 +139,9 @@ public class ChattingGui extends JFrame{
 		
 //		this.setVisible(true);
 
-		//대화 내용 불러오기
-		buf = file.fileInput();
-//		area.setText(buf.toString());
-		
-		
 	}
 	
-  
+	
 	/**
 	 *화면 배치 메소드
 	 */
@@ -241,9 +235,8 @@ public class ChattingGui extends JFrame{
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				if ( exitConfirm == 0 ) {
-//					buf = new StringBuffer(area.getText());
-//					file.fileOutput(buf);
 					System.exit(0);
+					dispose();
 				}
 			}
 		};
@@ -305,13 +298,16 @@ public class ChattingGui extends JFrame{
 		 */
 		//전송버튼누를때
 		sendBt.addActionListener(e->{
-			inputChat();
+			if(inputField.getText() != null)
+				inputChat();
 		});
 		//엔터단축키설정
 		KeyListener enter = new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER)
-					inputChat();
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if(inputField.getText() != null)
+						inputChat();
+				}
 			}
 		};
 		inputField.addKeyListener(enter);
@@ -325,9 +321,10 @@ public class ChattingGui extends JFrame{
 		 * 파일 전송 버튼 이벤트
 		 */
 		fileSendBt.addActionListener(e->{
-			SendClient sc = new SendClient();
-			ReceiveClient rc = new ReceiveClient();
+			client.fileNameSend();
 		});
+		
+		
 		/**
 		 * 캡쳐 메뉴의 화면캡쳐 이벤트
 		 */
@@ -372,33 +369,42 @@ public class ChattingGui extends JFrame{
 	
 	
 	/**
+	 * 불러온 채팅 로그를 채팅창에 입력 하는 메소드
+	 */
+	public void receiveLog(StringBuffer sb) {
+//		this.area.setText(sb.toString());
+		textAppend(sb.toString());
+	}
+	
+	
+	/**
 	 * 채팅 입력 메소드
 	 */
 	public void inputChat() {
-		this.setFlag(true);
-		String text = inputField.getText();
-		this.setSendText(text);
+		String text =this.inputField.getText();
+		client.send(text);
 		inputField.setText("");
 	}
 
 	
 	/**
-	 * 나의 채팅을 화면에 출력하는 메소드
-	 * @param 내가 보낸 메시지
+	 * 시스템 메시지를 화면에 출력하는 메소드
+	 * @param userID 보낸 사용자 ID
+	 * @param text 상대가 보낸 메시지
 	 */
-	public void myChat(String text) {
-		textAppend("[나] : " + text + "\n");
+	public void systemMessage(String text) {
+		textAppend("[시스템] : " + text + "\n");
 	}
 	
 	
 	/**
-	 * 상대의 채팅을 화면에 출력하는 메소드
-	 * @param 상대가 보낸 메시지
+	 * 채팅을 화면에 출력하는 메소드
+	 * @param userID 보낸 사용자 ID
+	 * @param text 상대가 보낸 메시지
 	 */
-	public void yourChat(String text) {
-		textAppend("[상대] : " + text + "\n");
+	public void inputChat(String userID, String text) {
+		textAppend("[" + userID + "] : " + text + "\n");
 	}
-
 
 	/**
 	 * 상대의 채팅을 화면에 출력하는 메소드
@@ -477,7 +483,5 @@ public class ChattingGui extends JFrame{
 //		 chat.setVisible(true);
 //		
 //	}
- 
-
 
 }
