@@ -3,19 +3,19 @@ package mini.mes.main;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Messenger Main 화면
  * @author 김현진
  *
  */
-class Messenger_m extends JFrame{
+class Messenger_m extends JFrame {
 	
 	private JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP);
 	private Messenger_List list = new Messenger_List();
 	private Messenger_FriendAdd search = new Messenger_FriendAdd();
 	private Messemger_Myinfo myinfo = new Messemger_Myinfo();
+	private Messenger_ChatList chat = new Messenger_ChatList();
 	
 	public Messenger_m() {
 		this.display();
@@ -41,8 +41,10 @@ class Messenger_m extends JFrame{
 		 * Tab 추가
 		 */
 		tab.addTab("친구목록", list);
+		tab.addTab("채팅목록", chat);
 		tab.addTab("친구찾기", search);
 		tab.addTab("나의정보", myinfo);
+		
 	}
 	
 	/**

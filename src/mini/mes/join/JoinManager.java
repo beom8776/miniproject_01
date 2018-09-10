@@ -1,6 +1,8 @@
 package mini.mes.join;
 import java.awt.event.*;
 import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import javax.swing.*;
@@ -27,6 +29,9 @@ class JoinWindow extends JFrame {
 	
 	private JButton btn0 = new JButton("가　입");
 	private JButton btn1 = new JButton("지우기");
+	
+	private String kind = null;	// Server에 어떤 처리 작업을 할것인지 지정해주는 변수
+
 	
 	public void display() {
 		con.setLayout(null);
@@ -93,6 +98,9 @@ class JoinWindow extends JFrame {
 	}
 	
 	public void event() {
+		/**
+		 * 종료 이벤트
+		 */
 		WindowListener listen = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -110,9 +118,13 @@ class JoinWindow extends JFrame {
 			}
 		};
 
+		/**
+		 * 회원가입 버튼 이벤트
+		 */
 		this.addWindowListener(listen);
 		
 		btn0.addActionListener(e -> {
+			
 			Member mb = new Member();
 			boolean flag = false;
 			jf.event();
@@ -125,13 +137,35 @@ class JoinWindow extends JFrame {
 			mb.setBirth(cb.appendBirth());
 			System.out.println(mb.toString());
 			
+			System.out.println();
+			
+			/**
+			 * Server에 회원정보 전송
+			 */
 			try {
-				mb.save();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+				Socket socket = new Socket("localhost", 10001);
+				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+				kind = "회원가입";
+				oos.writeObject(kind);
+				oos.flush();
+				
+				oos.writeObject(mb);
+				oos.flush();
+				oos.close();
+				
+			} catch (IOException e1) {e1.printStackTrace();}
+			
+			
+//			try {
+//				mb.save();
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
 		});
-
+		
+		/**
+		 * 지우기 버튼 이벤트 (작성된 내용 전체 지우기)
+		 */
 		btn1.addActionListener(e -> {
 			jf.tfId.setText("");
 			jf.pwf.setText("");
