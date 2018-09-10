@@ -3,12 +3,15 @@ package mini.mes.main;
 import java.awt.*;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -19,6 +22,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import javafx.scene.input.DataFormat;
 import mini.mes.join.Member;
 
 
@@ -27,7 +31,7 @@ import mini.mes.join.Member;
  * @author 김현진
  *
  */
-public class Messemger_Myinfo extends JPanel{
+public class Messemger_Myinfo extends JPanel implements Serializable{
 	
 	
 	private JPanel myinfo = new JPanel();
@@ -141,38 +145,27 @@ public class Messemger_Myinfo extends JPanel{
 				Image origin = changeImg.getImage();
 				Image changedImg = origin.getScaledInstance(100, 140, Image.SCALE_SMOOTH);
 				mypicture.setIcon(new ImageIcon(changedImg));
-			}
-			
-			/**
-			 * 변경된 이미지를 Server 나의 DB에 전송
-			 * 이미지 이름은 나의 ID.png로 저장한다.
-			 */
-			try {
-				Socket socket = new Socket("localhost", 10001);
-				ObjectOutputStream objectOut = new ObjectOutputStream(socket.getOutputStream());
 				
-				
-				
-			} catch (Exception e2) {e2.printStackTrace();}
-			
-			
-			/**
-			 * 이미지 변경 후 DB에 저장
-			 */
-			File imgFile = new File(path);
-			String fname = imgFile.getName();
-			int pos = fname.lastIndexOf(".");
-			String extension = fname.substring(pos+1);
-
-			
-			try {
-				Image img = ImageIO.read(imgFile);
-				BufferedImage buffImg = (BufferedImage)img;
-				
-				File picFile = new File("D:\\eclipse-java-photon-R-win32-x86_64\\workspace\\Project\\db\\"+mdate+"."+extension);
-				ImageIO.write(buffImg, extension, picFile);
-			} catch (IOException e1) {e1.printStackTrace();}
-			
+				/**
+				 * 변경된 이미지를 Server 나의 DB에 전송
+				 * 이미지 이름은 나의 ID.png로 저장한다.
+				 */
+				try {
+					Socket socket = new Socket("localhost", 10001);
+					ObjectOutputStream objectOut = new ObjectOutputStream(socket.getOutputStream());
+					String kind = "이미지";
+					objectOut.writeObject(kind);
+					objectOut.flush();
+					
+					File imgFile = new File(path);
+					BufferedImage img = null;
+					img = ImageIO.read(imgFile);
+					
+					
+					objectOut.writeObject(img);
+					objectOut.flush();
+				} catch (Exception e2) {e2.printStackTrace();}
+			}	
 		});
 		
 		/**

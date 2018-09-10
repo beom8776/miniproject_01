@@ -201,26 +201,32 @@ public class Messenger_FriendAdd extends JPanel{
 					objectOut.close();
 					objectIn.close();
 					System.out.println("(Client)현재상태 : 연결종료 --- 9");
+					
+					/**
+					 * 추가 버튼 이벤트
+					 * 친구 추가시 server로 정보전송 DB로 정리 후 나에게 데이터 전송
+					 */
+					searadd.addActionListener(e1->{
+						try {
+							Socket socket2 = new Socket("localhost", 10001);
+							ObjectOutputStream objectOut2 = new ObjectOutputStream(socket2.getOutputStream());
+							
+							kind = "친구추가";
+							objectOut2.writeObject(kind);
+							objectOut2.flush();
+							
+							String addId = searchFd.getText();
+							objectOut2.writeObject(addId);
+							objectOut2.flush();
+							
+							objectOut2.close();
+						} catch (Exception e2) {e2.printStackTrace();}
+					});
 				}
 			} catch (Exception e1) {e1.printStackTrace();}
-			
-//			try {
-//				ServerSocket server = new ServerSocket(10001);
-//				Socket socket = server.accept();
-//				System.out.println("-----접속-----");
-//				
-//				if(objectIn.equals("No_result"))
-//					
-//				else {
-
-//				}
-
-//			} catch (Exception e1) {e1.printStackTrace();}
-			
-			
-			
-			
 		});
+		
+
 	}
 }
 

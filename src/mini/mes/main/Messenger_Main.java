@@ -2,6 +2,12 @@ package mini.mes.main;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import javax.swing.*;
 
 /**
@@ -9,7 +15,7 @@ import javax.swing.*;
  * @author 김현진
  *
  */
-class Messenger_m extends JFrame {
+class Messenger_m extends JFrame{
 	
 	private JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP);
 	private Messenger_List list = new Messenger_List();
@@ -64,14 +70,120 @@ class Messenger_m extends JFrame {
 	}
 }
 
+
+/**
+ * 로그인 화면에서 메인 화면으로 연결
+ * @author 김현진
+ *
+ */
+class Window_Login extends JFrame{
+	
+//	컴포넌트를 배치할 영역을 JPanel로 구현
+	private JPanel con = new JPanel();
+	
+	private JLabel logLabel = new JLabel("메신저 로그인", JLabel.CENTER); 
+	private JTextField idFiled = new JTextField();//ID
+	private JTextField pwFiled = new JPasswordField();	//비밀번호
+	private JButton btLogin = new JButton("로그인");
+	private JButton btJoin = new JButton("회원가입");
+	
+	public Window_Login() {
+		this.display();
+		this.event();
+
+		
+		this.setLocationByPlatform(true);
+		this.setTitle("메신저 로그인");
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (dim.width/2)-(400/2);
+		int y = (dim.height/2)-(800/2);
+		this.setLocation(x, y);
+		this.setSize(400, 400);
+		this.setResizable(false);
+		this.setVisible(true);
+	}
+	/**
+	 * 화면 구현 메소드
+	 */
+	public void display() {
+		this.setContentPane(con);//con을 Component 설정 영역으로 등록
+		this.setLayout(null);
+		
+		con.add(logLabel);
+		logLabel.setBounds(100, 50, 200, 50);
+		
+		con.add(idFiled);
+		idFiled.setBounds(100, 110, 200, 35);
+		idFiled.setColumns(10);
+		
+		con.add(pwFiled);
+		pwFiled.setBounds(100, 155, 200, 35);
+		pwFiled.setColumns(10);
+		
+		con.add(btLogin);
+		btLogin.setBounds(100, 200, 98, 35);
+		
+		con.add(btJoin);
+		btJoin.setBounds(202, 200, 98, 35);
+	}
+	
+	/**
+	 * 이벤트 설정 메소드
+	 */
+	public void event() {
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);//x누르면 창 소멸
+		
+		/**
+		 * 로그인 버튼 이벤트
+		 * 회원DB에서 정보확인 요청 후 일치할 경우 Main 화면 출력
+		 */
+		btLogin.addActionListener(e->{
+			ObjectOutputStream objectOut = null;
+			ObjectInputStream objectIn = null;
+			Socket socket;
+			String kind = null;
+			
+			try {
+				socket = new Socket("localhost", 10001);
+				objectOut = new ObjectOutputStream(socket.getOutputStream());
+				String str;
+				kind = "로그인";
+				objectOut.writeObject(kind);
+				objectOut.flush();
+				
+				objectOut.writeObject(idFiled.getText());
+				objectOut.flush();
+				
+				
+					str = (String)objectIn.readObject();
+					if(str.equals("로그인 완료")) {
+						
+						Messenger_m java_Messenger = new Messenger_m();
+						this.dispose();
+					}
+					if(str.equals("결과없음")) {
+						JOptionPane.showMessageDialog(null, "아이디 또는 비밀번호를 확인해 주세요.");
+						objectOut.close();
+					}
+			} catch (Exception e1) {e1.printStackTrace();}
+		});
+		
+		btJoin.addActionListener(e->{
+			
+		});
+	}
+}
+
 /**
  * 메인 클래스
  * @author 김현진
  *
  */
 public class Messenger_Main {
-	public static void main(String[] args) {
-		Messenger_m java_Messenger = new Messenger_m();
+	public static void main(String[] args) {	
+		Window_Login login = new Window_Login();
+		
+
 	}
 }
 
