@@ -1,8 +1,11 @@
 package mini.mes.main;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 /**
@@ -49,7 +52,7 @@ class Messenger_List extends JPanel{
 		friend1.setLayout(null);
 		friend1.setBorder(new LineBorder(Color.ORANGE, 1));
 		
-		friend1.add(frpictur1);
+//		친구 추가에 대한 별도 클래스 필요
 		frpictur1.setBounds(1, 1, 57, 57);
 		friend1.add(frname1);
 		frname1.setBounds(70, 3, 160, 25);
@@ -63,7 +66,7 @@ class Messenger_List extends JPanel{
 		friend2.setBounds(1, 65, 376, 60); // X, Y, width, height
 		friend2.setLayout(null);
 		friend2.setBorder(new LineBorder(Color.ORANGE, 1));
-		
+    
 		friend2.add(frpictur2);
 		frpictur2.setBounds(1, 1, 57, 57);
 		friend2.add(frname2);
@@ -77,10 +80,17 @@ class Messenger_List extends JPanel{
 	
 	public void event() {
 //		startfr1.addActionListener(e->{
-//			String myID = "야호";
+//			String myID = "1조";
 //			List<String> list = new ArrayList<>();
 //			list.add(frname1.getText());
-//			list.add("호랑나비");
+//			list.add(myID);
+//			ChatClient client = new ChatClient(list, myID);
+//		});
+		
+//		startfr2.addActionListener(e->{
+//			String myID = "1조";
+//			List<String> list = new ArrayList<>();
+//			list.add(frname2.getText());
 //			list.add(myID);
 //			ChatClient client = new ChatClient(list, myID);
 //		});

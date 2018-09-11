@@ -195,8 +195,6 @@ public class Messenger_Main {
 	public static void main(String[] args) {	
 //		Window_Login login = new Window_Login();
 		Messenger_m login = new Messenger_m();
-		
-
 	}
 }
 
