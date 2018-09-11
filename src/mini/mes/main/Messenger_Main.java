@@ -10,6 +10,9 @@ import java.net.UnknownHostException;
 
 import javax.swing.*;
 
+import mini.mes.join.JoinManager;
+import mini.mes.join.Member;
+
 /**
  * Messenger Main 화면
  * @author 김현진
@@ -138,38 +141,50 @@ class Window_Login extends JFrame{
 		 * 회원DB에서 정보확인 요청 후 일치할 경우 Main 화면 출력
 		 */
 		btLogin.addActionListener(e->{
-			ObjectOutputStream objectOut = null;
-			ObjectInputStream objectIn = null;
-			Socket socket;
-			String kind = null;
-			
+//			ObjectOutputStream objectOut = null;
+//			ObjectInputStream objectIn = null;
+//			Socket socket;
+//			String kind = null;
+//			
 			try {
-				socket = new Socket("localhost", 10001);
-				objectOut = new ObjectOutputStream(socket.getOutputStream());
-				String str;
-				kind = "로그인";
-				objectOut.writeObject(kind);
-				objectOut.flush();
+//				socket = new Socket("localhost", 10001);
+//				System.out.println("socket : ["+socket+"]");
+//				objectOut = new ObjectOutputStream(socket.getOutputStream());
+//				System.out.println("objectOut : ["+objectOut+"]");
+//				String str=null;
+//				System.out.println("str : ["+str+"]");
+//				kind = "로그인";
+//				System.out.println("kind : ["+kind+"]");
+//				objectOut.writeObject(kind);
+//				System.out.println("objectOut.write : ["+objectOut+"]");
+//				objectOut.flush();
+//				
+//				objectOut.writeObject);
+//				System.out.println("objectOut.write : ["+objectOut+"]");
+//				objectOut.flush();
+//				
+//				
+//				objectIn = new ObjectInputStream(socket.getInputStream());
+//				System.out.println("objectIn : ["+objectIn+"]");
+//					str = (String)objectIn.readObject();
+//					System.out.println("str : ["+str+"]");
 				
-				objectOut.writeObject(idFiled.getText());
-				objectOut.flush();
-				
-				
-					str = (String)objectIn.readObject();
-					if(str.equals("로그인 완료")) {
+				String str = "Test00";
+			
+					if(str.equals(idFiled.getText())) {
 						
 						Messenger_m java_Messenger = new Messenger_m();
 						this.dispose();
 					}
-					if(str.equals("결과없음")) {
+					else {
 						JOptionPane.showMessageDialog(null, "아이디 또는 비밀번호를 확인해 주세요.");
-						objectOut.close();
 					}
 			} catch (Exception e1) {e1.printStackTrace();}
 		});
 		
 		btJoin.addActionListener(e->{
-			
+			String[] args = null;
+			JoinManager.main(args);
 		});
 	}
 }

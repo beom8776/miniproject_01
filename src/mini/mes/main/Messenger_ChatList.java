@@ -32,7 +32,7 @@ class Messenger_ChatList extends JPanel{
 	private JLabel frpictur1 = new JLabel(fricon1);
 	private JLabel frname1 = new JLabel("홍길동");
 	private JLabel frment1 = new JLabel("내가 누구죠? 그게 정말 너무 궁금해요~~~ 알죠?");
-	private JButton startfr1 = new JButton("1:1대화");
+	private JButton startfr1 = new JButton("입장");
 	
 	private JPanel friend2 = new JPanel();
 	
@@ -40,7 +40,7 @@ class Messenger_ChatList extends JPanel{
 	private JLabel frpictur2 = new JLabel(fricon2);
 	private JLabel frname2 = new JLabel("홍진영");
 	private JLabel frment2 = new JLabel("네네네네네 배터리");
-	private JButton startfr2 = new JButton("1:1대화");
+	private JButton startfr2 = new JButton("입장");
 
 	
 	public Messenger_ChatList() {
@@ -68,7 +68,7 @@ class Messenger_ChatList extends JPanel{
 		frment1.setBounds(70, 30, 230, 25);
 		friend1.add(startfr1);
 		startfr1.setBounds(298, 18, 72, 24);
-		startfr1.setFont(new Font("굴림", Font.BOLD, 9));
+		startfr1.setFont(new Font("굴림", Font.BOLD, 11));
 		
 		frList.add(friend2);
 		friend2.setBounds(1, 65, 376, 60); // X, Y, width, height
@@ -83,7 +83,7 @@ class Messenger_ChatList extends JPanel{
 		frment2.setBounds(70, 30, 230, 25);
 		friend2.add(startfr2);
 		startfr2.setBounds(298, 18, 72, 24);
-		startfr2.setFont(new Font("굴림", Font.BOLD, 9));
+		startfr2.setFont(new Font("굴림", Font.BOLD, 11));
 	}
 	
 	public void event() {
