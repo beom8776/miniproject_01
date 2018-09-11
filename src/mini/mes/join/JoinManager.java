@@ -1,4 +1,6 @@
 package mini.mes.join;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
@@ -200,9 +202,13 @@ class JoinWindow extends JFrame {
 		this.event();
 		this.setTitle("회원 가입을 위해 빈칸을 채워 주세요.");
 		this.setSize(450,600);
-		this.setLocation(200, 200);
 		this.setResizable(false);
 		this.setVisible(true);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (dim.width/2)-(400/2);
+		int y = (dim.height/2)-(800/2);
+		this.setLocation(x, y);
 	}
 	
 }

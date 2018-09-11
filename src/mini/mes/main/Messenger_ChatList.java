@@ -71,7 +71,7 @@ class Messenger_ChatList extends JPanel{
 		frment1.setBounds(70, 30, 230, 25);
 		friend1.add(startfr1);
 		startfr1.setBounds(298, 18, 72, 24);
-		startfr1.setFont(new Font("굴림", Font.BOLD, 9));
+		startfr1.setFont(new Font("굴림", Font.BOLD, 11));
 		
 		frList.add(friend2);
 		friend2.setBounds(1, 65, 376, 60); // X, Y, width, height
@@ -86,7 +86,7 @@ class Messenger_ChatList extends JPanel{
 		frment2.setBounds(70, 30, 230, 25);
 		friend2.add(startfr2);
 		startfr2.setBounds(298, 18, 72, 24);
-		startfr2.setFont(new Font("굴림", Font.BOLD, 9));
+		startfr2.setFont(new Font("굴림", Font.BOLD, 11));
 	}
 	
 	public void event() {
