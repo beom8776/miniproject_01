@@ -53,7 +53,6 @@ class Messenger_List extends JPanel{
 		friend1.setBorder(new LineBorder(Color.ORANGE, 1));
 		
 //		친구 추가에 대한 별도 클래스 필요
-		friend1.add(frpictur1);
 		frpictur1.setBounds(1, 1, 57, 57);
 		friend1.add(frname1);
 		frname1.setBounds(70, 3, 160, 25);
@@ -67,7 +66,7 @@ class Messenger_List extends JPanel{
 		friend2.setBounds(1, 65, 376, 60); // X, Y, width, height
 		friend2.setLayout(null);
 		friend2.setBorder(new LineBorder(Color.ORANGE, 1));
-//		
+    
 		friend2.add(frpictur2);
 		frpictur2.setBounds(1, 1, 57, 57);
 		friend2.add(frname2);

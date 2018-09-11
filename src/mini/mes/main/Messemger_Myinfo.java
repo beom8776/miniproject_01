@@ -172,7 +172,7 @@ public class Messemger_Myinfo extends JPanel implements Serializable{
 		 * 삭제버튼 이벤트 (기본 이미지로 변경)
 		 */
 		imgDel.addActionListener(e->{
-			String path = "D:\\Java\\workspace\\Image_group\\noImg.jpg";
+			String path = "D:\\Java\\workspace\\Image_group\\NoIMG.jpg";
 			mypicture.setIcon(new ImageIcon(path));
 		});
 		
