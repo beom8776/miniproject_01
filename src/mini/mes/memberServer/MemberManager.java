@@ -1,7 +1,6 @@
 package mini.mes.memberServer;
 
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,83 +23,145 @@ public class MemberManager extends Thread implements Serializable{
 	private Member mb;
 	private String result = null;
 	private String str = null;
+	String kind = null;
 	
-	public MemberManager(Socket socket, ObjectInputStream objectIn) {
+	public MemberManager(Socket socket) {
 		try {
 			this.socket = socket;
-			this.objectIn = objectIn;
 			this.objectOut  = new ObjectOutputStream(socket.getOutputStream());
+			this.objectIn = new ObjectInputStream(socket.getInputStream());
 		}catch(Exception e) {
 			System.out.println("스트림 설정 오류");
 		}
 
 	}
+	public void run() {
+		while(true) {
+			try {
+				kind = objectIn.readUTF();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("메시지 수신 오류");
+			}
+			System.out.println("kind : ["+kind+"]");
+			
+			/**
+			 * 회원DB 생성 작업
+			 */
+			if(kind.equals("회원가입")) {
+				this.create();
+			}
+			
+			/**
+			 * Client에서 ID검색을 요청하여 확인 후 결과 값을 반환해 주는 작업
+			 */
+			else if(kind.equals("친구찾기")) {
+				this.start();
+			}
+			
+			/**
+			 * 나의정보 - 상태메시지 업데이트
+			 */
+			else if(kind.equals("상태메시지")) {
+				this.myment();
+			}
+			
+			/**
+			 * 나의정보 - 이미지 업데이트
+			 */
+			else if(kind.equals("이미지")) {
+				this.image();
+			}
+			
+			/**
+			 * 친구검색 후 친구추가시 나의DB에 추가
+			 */
+			else if(kind.equals("친구추가")) {
+				this.addFriend();
+			}
+			
+			/**
+			 * 로그인 요청시 확
+			 */
+			else if(kind.equals("로그인")) {
+				this.login();
+			}
+			try {
+				Thread.sleep(2000L);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 	
 	/**
 	 * 회원의 검색요청을 받아 검색하는 ID가 있는지 확인하고 결과를 전송한다.
 	 */
-	public void run() {
-		try {
-//			objectIn = new ObjectInputStream(socket.getInputStream());
-			System.out.println("(Server)[[내용확인]] : [objectIn = "+objectIn+"]");
-			str = (String)objectIn.readObject();
-			System.out.println("(Server)현재상태 : [데이터 수신 완료 --- 3]");
-			System.out.println("(Server)현재내용 : [str = "+str+"] --- 3");
-			System.out.println();
-			
-//			String path = "D:\\Java\\db\\membersDB\\"+str+".db";
-			String path = "D:\\eclipse-java-photon-R-win32-x86_64 (Test)\\workspace\\network_Test\\membersDB\\"+str+".db"; // 홈Test
-			
-			File findfile = new File(path);
-			
-			System.out.println("(Server)현재상태 : [요청 결과 처리 완료 --- 4]");
-			System.out.println("(Server)현재내용 : [findfile = "+findfile+" --- 4]");
-			
-			System.out.println("(Server)현재상태 : [결과값 전송 준비 --- 5]");
-			
-
-			System.out.println();
-			
-			System.out.println("(Server)[[조건문 확인]] : [findfile.getName() = "+findfile.getName()+"]");
-			
-			if((findfile.exists()) == false) {
-				
-				System.out.println("(Server)현재상태 : [결과값(if) 전송 준비 --- 6]");
-				
-				result = "No_result";
-				objectOut.writeObject(result);
-				
-				System.out.println("(Server)[[내용확인]] : [(if)objectOut = "+objectOut+" --- 6]");
-				
-				objectOut.flush();
-			
-				System.out.println("(Server)현재상태 : [결과값(if) 전송 --- 7]");
-			}
-			
-			else {
-				System.out.println("(Server)현재상태 : [결과값(else) 전송 준비 --- 6]");
-				result = "Exist_True";
-				objectOut.writeObject(result);
-				System.out.println("(Server)현재내용 : [(else)objectOut = "+objectOut+" --- 6]");
-				objectOut.flush();
-				System.out.println("(Server)현재상태 : [결과값(else) 전송 --- 7]");
-				
-				ObjectInputStream input = new ObjectInputStream(
-						new BufferedInputStream(new FileInputStream(findfile)));
-				System.out.println("(Server)[[내용확인]] : [input = "+input+"]");
-				//				BufferedInputStream buffIn = new BufferedInputStream(new FileInputStream(findfile))
-				mb = (Member)input.readObject();
-				System.out.println("(Server)[[내용확인]] : [mb.getname() = "+mb.getName()+"]");
-				System.out.println("(Server)[[내용확인]] : [mb.getment() = "+mb.getMent()+"]");
-				
-				objectOut.writeObject(mb);
-
-				System.out.println("(Server)현재내용 : [결과값 objectOut"+objectOut+" --- 7]");
-				objectOut.flush();
-				System.out.println("(Server)현재상태 : [결과 내용 전송 --- 8]");
-			}
-		} catch (Exception e) {e.printStackTrace();}
-	}
+//	public void run() {
+//		try {
+////			objectIn = new ObjectInputStream(socket.getInputStream());
+//			System.out.println("(Server)[[내용확인]] : [objectIn = "+objectIn+"]");
+//			str = (String)objectIn.readObject();
+//			System.out.println("(Server)현재상태 : [데이터 수신 완료 --- 3]");
+//			System.out.println("(Server)현재내용 : [str = "+str+"] --- 3");
+//			System.out.println();
+//			
+////			String path = "D:\\Java\\db\\membersDB\\"+str+".db";
+//			String path = "D:\\eclipse-java-photon-R-win32-x86_64 (Test)\\workspace\\network_Test\\membersDB\\"+str+".db"; // 홈Test
+//			
+//			File findfile = new File(path);
+//			
+//			System.out.println("(Server)현재상태 : [요청 결과 처리 완료 --- 4]");
+//			System.out.println("(Server)현재내용 : [findfile = "+findfile+" --- 4]");
+//			
+//			System.out.println("(Server)현재상태 : [결과값 전송 준비 --- 5]");
+//			
+//
+//			System.out.println();
+//			
+//			System.out.println("(Server)[[조건문 확인]] : [findfile.getName() = "+findfile.getName()+"]");
+//			
+//			if((findfile.exists()) == false) {
+//				
+//				System.out.println("(Server)현재상태 : [결과값(if) 전송 준비 --- 6]");
+//				
+//				result = "No_result";
+//				objectOut.writeObject(result);
+//				
+//				System.out.println("(Server)[[내용확인]] : [(if)objectOut = "+objectOut+" --- 6]");
+//				
+//				objectOut.flush();
+//			
+//				System.out.println("(Server)현재상태 : [결과값(if) 전송 --- 7]");
+//			}
+//			
+//			else {
+//				System.out.println("(Server)현재상태 : [결과값(else) 전송 준비 --- 6]");
+//				result = "Exist_True";
+//				objectOut.writeObject(result);
+//				System.out.println("(Server)현재내용 : [(else)objectOut = "+objectOut+" --- 6]");
+//				objectOut.flush();
+//				System.out.println("(Server)현재상태 : [결과값(else) 전송 --- 7]");
+//				
+//				ObjectInputStream input = new ObjectInputStream(
+//						new BufferedInputStream(new FileInputStream(findfile)));
+//				System.out.println("(Server)[[내용확인]] : [input = "+input+"]");
+//				//				BufferedInputStream buffIn = new BufferedInputStream(new FileInputStream(findfile))
+//				mb = (Member)input.readObject();
+//				System.out.println("(Server)[[내용확인]] : [mb.getname() = "+mb.getName()+"]");
+//				System.out.println("(Server)[[내용확인]] : [mb.getment() = "+mb.getMent()+"]");
+//				
+//				objectOut.writeObject(mb);
+//
+//				System.out.println("(Server)현재내용 : [결과값 objectOut"+objectOut+" --- 7]");
+//				objectOut.flush();
+//				System.out.println("(Server)현재상태 : [결과 내용 전송 --- 8]");
+//			}
+//		} catch (Exception e) {e.printStackTrace();}
+//	}
 
 	
 	/**
@@ -112,13 +173,15 @@ public class MemberManager extends Thread implements Serializable{
 			System.out.println("현재상태 : [데이터 받기 완료 --- 3]");
 //			File target = new File("D:\\Java\\db\\membersDB\\"+mb.getId() + ".db");
 			System.out.println("현재상태 : [mb.getid() = "+mb.getId()+" --- 3]");
-			File target = new File("D:\\eclipse-java-photon-R-win32-x86_64 (Test)\\workspace\\network_Test\\membersDB\\"+mb.getId()+".db");
+			File target = new File(System.getProperty("user.dir")+"\\membersDB\\"+mb.getId()+".db");
+			target.createNewFile();
 			System.out.println("현재상태 : [파일 생성 --- 5]");
 			objectOut = new ObjectOutputStream(
 					new BufferedOutputStream(new FileOutputStream(target)));
-
+			System.out.println("objectOut : ["+objectOut+"]");//테스트코드
 			objectOut.writeObject(mb);
 			objectOut.flush();
+			objectOut = new ObjectOutputStream(socket.getOutputStream());
 		} catch (Exception e) {e.printStackTrace();}
 	}
 	
@@ -207,23 +270,30 @@ public class MemberManager extends Thread implements Serializable{
 		try {
 			String str = objectIn.readUTF();
 			System.out.println("받은 아이디 : " + str);
+			String pw = objectIn.readUTF();
+			System.out.println("받은 비밀번호 : " + pw);
 			String path = System.getProperty("user.dir")+"\\membersDB\\Test01\\"+str+".db";
+			System.out.println("path : " + path);
 			File file = new File(path);
-			System.out.println(str + "유저의 DB정보 : " + file);
 			
 			if(file.exists()) {
+				System.out.println(str + "유저의 DB정보 : " + file);
+				System.out.println("파일이 존재하여 로그인 완료 메시지를 전송");
 				String result = "로그인 완료";
 				objectOut.writeUTF(result);
 				objectOut.flush();
 			}
 			else {
+				System.out.println("파일이 존재하지 않으므로 결과없음 메시지를 전송");
 				String result = "결과없음";
-				objectOut.writeObject(result);
+				objectOut.writeUTF(result);
 				objectOut.flush();
 			}
 			
-			
-		} catch (Exception e) {e.printStackTrace();}
+			System.out.println("login() 메소드 완료");
+		} catch (Exception e) {
+			e.printStackTrace();
+			}
 	}
 }
 
