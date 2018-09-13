@@ -26,8 +26,14 @@ public class MemberManager extends Thread implements Serializable{
 	private String str = null;
 	
 	public MemberManager(Socket socket, ObjectInputStream objectIn) {
-		this.socket = socket;
-		this.objectIn = objectIn;
+		try {
+			this.socket = socket;
+			this.objectIn = objectIn;
+			this.objectOut  = new ObjectOutputStream(socket.getOutputStream());
+		}catch(Exception e) {
+			System.out.println("스트림 설정 오류");
+		}
+
 	}
 	
 	/**
@@ -52,8 +58,7 @@ public class MemberManager extends Thread implements Serializable{
 			
 			System.out.println("(Server)현재상태 : [결과값 전송 준비 --- 5]");
 			
-			ObjectOutputStream objectOut = new ObjectOutputStream(socket.getOutputStream());
-			System.out.println("(Server)[[내용확인]] : [objectOut = "+objectOut+"]");
+
 			System.out.println();
 			
 			System.out.println("(Server)[[조건문 확인]] : [findfile.getName() = "+findfile.getName()+"]");
@@ -200,18 +205,16 @@ public class MemberManager extends Thread implements Serializable{
 	
 	public void login() {
 		try {
-			String str = (String)objectIn.readObject();
-			String path = "D:\\eclipse-java-photon-R-win32-x86_64 (Test)\\workspace\\network_Test\\membersDB\\Test01\\"+str+".db";
+			String str = objectIn.readUTF();
+			System.out.println("받은 아이디 : " + str);
+			String path = System.getProperty("user.dir")+"\\membersDB\\Test01\\"+str+".db";
 			File file = new File(path);
+			System.out.println(str + "유저의 DB정보 : " + file);
 			
-			if((file.exists()) == true) {
+			if(file.exists()) {
 				String result = "로그인 완료";
-				objectOut.writeObject(result);
+				objectOut.writeUTF(result);
 				objectOut.flush();
-				
-				ObjectInputStream input = new ObjectInputStream(
-						new BufferedInputStream(new FileInputStream(file)));
-				
 			}
 			else {
 				String result = "결과없음";
