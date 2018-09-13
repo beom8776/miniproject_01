@@ -9,7 +9,9 @@ import java.util.*;
 
 import javax.swing.*;
 
-class JoinWindow extends JFrame {
+import mini.mes.chatServer.Board;
+
+public class JoinManager extends JFrame{
 	private JoinField jf = new JoinField();
 	private CalendarBox cb = new CalendarBox();
 	
@@ -33,7 +35,32 @@ class JoinWindow extends JFrame {
 	private JButton btn1 = new JButton("지우기");
 	
 	private String kind = null;	// Server에 어떤 처리 작업을 할것인지 지정해주는 변수
-
+	private Socket socket;
+	private ObjectOutputStream oos;
+	
+	
+	public JoinManager(Socket socket, ObjectOutputStream oos) {
+		this.display();
+		this.event();
+		this.setTitle("회원 가입을 위해 빈칸을 채워 주세요.");
+		this.setSize(450,600);
+		this.setResizable(false);
+		this.setVisible(true);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (dim.width/2)-(400/2);
+		int y = (dim.height/2)-(800/2);
+		this.setLocation(x, y);
+		
+		this.socket = socket; 
+		try {
+			this.oos = oos;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("출력스트림 오류");
+		}
+	}
+	
 	
 	public void display() {
 		con.setLayout(null);
@@ -119,12 +146,12 @@ class JoinWindow extends JFrame {
 					return;
 			}
 		};
+		this.addWindowListener(listen);
 
+		
 		/**
 		 * 회원가입 버튼 이벤트
 		 */
-		this.addWindowListener(listen);
-		
 		btn0.addActionListener(e -> {
 			
 			Member mb = new Member();
@@ -145,17 +172,20 @@ class JoinWindow extends JFrame {
 			 * Server에 회원정보 전송
 			 */
 			try {
-				Socket socket = new Socket("localhost", 10001);
-				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 				kind = "회원가입";
-				oos.writeObject(kind);
+				oos.writeUTF(kind);
 				oos.flush();
 				
 				oos.writeObject(mb);
 				oos.flush();
 				oos.close();
 				
-			} catch (IOException e1) {e1.printStackTrace();}
+				JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다");
+				this.setVisible(false);
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			
 			
 //			try {
@@ -197,24 +227,6 @@ class JoinWindow extends JFrame {
 		});
 	}
 	
-	public JoinWindow() {
-		this.display();
-		this.event();
-		this.setTitle("회원 가입을 위해 빈칸을 채워 주세요.");
-		this.setSize(450,600);
-		this.setResizable(false);
-		this.setVisible(true);
-		
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (dim.width/2)-(400/2);
-		int y = (dim.height/2)-(800/2);
-		this.setLocation(x, y);
-	}
-	
 }
 
-public class JoinManager {
-	public static void main(String[] args) {
-		JoinWindow jw = new JoinWindow();
-	}
-}
+
