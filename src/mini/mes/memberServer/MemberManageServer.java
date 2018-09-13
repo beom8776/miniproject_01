@@ -1,6 +1,5 @@
 package mini.mes.memberServer;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -35,12 +34,13 @@ public class MemberManageServer {
 				System.out.println("(Server)현재상태 : [접속완료] --- 2");
 				System.out.println("(Server)현재내용 : ["+socket+"] --- 2");
 				System.out.println();
+				
 				/**
 				 * 어떤 작업을 실행 할 것인지를 받는 단계
 				 */
 				objectIn = new ObjectInputStream(socket.getInputStream());
-				kind = (String)objectIn.readObject();
-				MemberManager members  = new MemberManager(socket, objectIn);	
+				kind = objectIn.readUTF();
+				MemberManager members  = new MemberManager(socket, objectIn);
 				
 				/**
 				 * 회원DB 생성 작업

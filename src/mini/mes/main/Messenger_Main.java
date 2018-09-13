@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import javax.swing.*;
 
@@ -87,6 +88,9 @@ class Window_Login extends JFrame{
 	private JButton btLogin = new JButton("로그인");
 	private JButton btJoin = new JButton("회원가입");
 	
+	private ObjectOutputStream objectOut;
+	private ObjectInputStream objectIn;
+	
 	public Window_Login() {
 		this.display();
 		this.event();
@@ -101,6 +105,20 @@ class Window_Login extends JFrame{
 		this.setSize(400, 400);
 		this.setResizable(false);
 		this.setVisible(true);
+		try {
+			InetAddress inet = InetAddress.getByName("localhost");
+			Socket socket = new Socket(inet, 10001);
+			System.out.println("socket : ["+socket+"]");
+			objectIn = new ObjectInputStream(socket.getInputStream());
+			objectOut = new ObjectOutputStream(socket.getOutputStream());
+			System.out.println("objectOut : ["+objectOut+"]");
+
+			System.out.println("objectIn : ["+objectIn+"]");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		
 	}
 	/**
 	 * 화면 구현 메소드
@@ -138,45 +156,31 @@ class Window_Login extends JFrame{
 		 * 회원DB에서 정보확인 요청 후 일치할 경우 Main 화면 출력
 		 */
 		btLogin.addActionListener(e->{
-//			ObjectOutputStream objectOut = null;
-//			ObjectInputStream objectIn = null;
-//			Socket socket;
-//			String kind = null;
-//			
 			try {
-//				socket = new Socket("localhost", 10001);
-//				System.out.println("socket : ["+socket+"]");
-//				objectOut = new ObjectOutputStream(socket.getOutputStream());
-//				System.out.println("objectOut : ["+objectOut+"]");
-//				String str=null;
-//				System.out.println("str : ["+str+"]");
-//				kind = "로그인";
-//				System.out.println("kind : ["+kind+"]");
-//				objectOut.writeObject(kind);
-//				System.out.println("objectOut.write : ["+objectOut+"]");
-//				objectOut.flush();
-//				
-//				objectOut.writeObject);
-//				System.out.println("objectOut.write : ["+objectOut+"]");
-//				objectOut.flush();
-//				
-//				
-//				objectIn = new ObjectInputStream(socket.getInputStream());
-//				System.out.println("objectIn : ["+objectIn+"]");
-//					str = (String)objectIn.readObject();
-//					System.out.println("str : ["+str+"]");
+
+				String kind = "로그인";
+				objectOut.writeUTF(kind);
+				objectOut.flush();
+				System.out.println("objectOut.write : ["+kind+"]");//테스트코드
 				
-				String str = "Test00";
-			
-					if(str.equals(idFiled.getText())) {
-						
-						Messenger_m java_Messenger = new Messenger_m();
-						this.dispose();
-					}
-					else {
-						JOptionPane.showMessageDialog(null, "아이디 또는 비밀번호를 확인해 주세요.");
-					}
-			} catch (Exception e1) {e1.printStackTrace();}
+				objectOut.writeUTF(idFiled.getText());
+				objectOut.flush();
+				System.out.println("objectOut.write : ["+idFiled.getText()+"]");//테스트코드
+				
+				String str = objectIn.readUTF();
+				System.out.println("str : ["+str+"]");	
+				
+				if(str.equals("로그인 완료")) {
+					JOptionPane.showMessageDialog(this, "로그인 완료");
+					Messenger_m java_Messenger = new Messenger_m();
+					this.dispose();
+				}
+				else if(str.equals("결과없음")){
+					JOptionPane.showMessageDialog(null, "아이디 또는 비밀번호를 확인해 주세요.");
+				}
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		});
 		
 		btJoin.addActionListener(e->{
@@ -193,8 +197,8 @@ class Window_Login extends JFrame{
  */
 public class Messenger_Main {
 	public static void main(String[] args) {	
-//		Window_Login login = new Window_Login();
-		Messenger_m login = new Messenger_m();
+		Window_Login login = new Window_Login();
+//		Messenger_m login = new Messenger_m();
 	}
 }
 
