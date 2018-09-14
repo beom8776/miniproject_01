@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import mini.mes.chatServer.Board;
-import mini.mes.chatServer.ChatServerManager;
 
 /**
  * 회원관리 서버
@@ -36,7 +35,6 @@ public class MemberManageServer {
 			manager.setDaemon(true);
 			manager.start();
 			Thread.sleep(50L);
-			
 		}
 		}catch(Exception e) {
 			e.printStackTrace();
