@@ -1,51 +1,48 @@
 package mini.mes.main;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+import mini.mes.chatServer.ChatClient;
 
 /**
- * 채팅목록 Tab
+ * 친구목록 Tab
  * @author 김현진
  *
  */
 class Messenger_ChatList extends JPanel{
 	
 	
-	/**
-	 * 
-	 * 
-	 * 현재 클래스 전체 수정 필요
-	 * [작업준비중]
-	 * 
-	 * 
-	 * 
-	 */
-	
-	
-	
 	private JPanel frList = new JPanel();
 	private JPanel friend1 = new JPanel();
 	
-	private ImageIcon fricon1 = new ImageIcon("D:\\\\Java\\\\workspace\\\\Image_group\\\\NoIMG.jpg");
+	private ImageIcon fricon1 = new ImageIcon("D:\\Java\\workspace\\Image_group\\NoIMG.jpg");
 	private JLabel frpictur1 = new JLabel(fricon1);
 	private JLabel frname1 = new JLabel("홍길동");
-	private JLabel frment1 = new JLabel("내가 누구죠? 그게 정말 너무 궁금해요~~~ 알죠?");
-	private JButton startfr1 = new JButton("입장");
+	private JLabel frment1 = new JLabel("");
+	private JButton startfr1 = new JButton("1:1대화");
 	
 	private JPanel friend2 = new JPanel();
 	
-	private ImageIcon fricon2 = new ImageIcon("D:\\\\Java\\\\workspace\\\\Image_group\\\\NoIMG.jpg");
+	private ImageIcon fricon2 = new ImageIcon("D:\\Java\\workspace\\Image_group\\NoIMG.jpg");
 	private JLabel frpictur2 = new JLabel(fricon2);
-	private JLabel frname2 = new JLabel("홍진영");
-	private JLabel frment2 = new JLabel("네네네네네 배터리");
-	private JButton startfr2 = new JButton("입장");
+	private JLabel frname2 = new JLabel("홍진영, 김철수, 박태환");
+	private JLabel frment2 = new JLabel("");
+	private JButton startfr2 = new JButton("그룹대화");
 
 	
 	public Messenger_ChatList() {
 		this.event();
 		this.setLayout(null);
+		
+		
 		
 		/**
 		 * 친구리스트영역 패널
@@ -74,7 +71,7 @@ class Messenger_ChatList extends JPanel{
 		friend2.setBounds(1, 65, 376, 60); // X, Y, width, height
 		friend2.setLayout(null);
 		friend2.setBorder(new LineBorder(Color.ORANGE, 1));
-		
+//		
 		friend2.add(frpictur2);
 		frpictur2.setBounds(1, 1, 57, 57);
 		friend2.add(frname2);
@@ -87,11 +84,23 @@ class Messenger_ChatList extends JPanel{
 	}
 	
 	public void event() {
+//		startfr1.addActionListener(e->{
+//			String myID = "1조";
+//			List<String> list = new ArrayList<>();
+//			list.add(frname1.getText());
+//			list.add(myID);
+//			ChatClient client = new ChatClient(list, myID);
+//		});
 		
+//		startfr2.addActionListener(e->{
+//			String myID = "1조";
+//			List<String> list = new ArrayList<>();
+//			list.add("김철수");
+//			list.add("박태환");
+//			list.add("홍진영");
+//			list.add(myID);
+//			ChatClient client = new ChatClient(list, myID);
+//		});
 	}
 }
-
-
-
-
 

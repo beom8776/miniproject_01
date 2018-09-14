@@ -8,9 +8,11 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JOptionPane;
-import mini.mes.chatfile.Dialog;
+
 import mini.mes.chatting.ChattingGui;
 
 /**
@@ -313,8 +315,17 @@ public class ChatClient extends Thread {
 	/**
 	 * 클라이언트 테스트용 메인
 	 */
-//	public static void main(String[] args) {
-//		ChatClient client = new ChatClient();
-//	}
+	public static void main(String[] args) {
+		List<String> setList = new ArrayList<>();
+		String userSize = JOptionPane.showInputDialog(null, "총 인원 수를 입력");
+		int size = Integer.parseInt(userSize);
+		String myID = JOptionPane.showInputDialog(null,  "나의 아이디를 입력");
+		setList.add(myID);
+		for(int i = 0; i < size-1; i++) {
+			String ID = JOptionPane.showInputDialog(null,  "아이디를 입력");
+			setList.add(ID);
+		}
+		ChatClient client = new ChatClient(setList, myID);
+	}
 	
 }

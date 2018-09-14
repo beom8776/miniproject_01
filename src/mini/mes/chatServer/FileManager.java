@@ -1,4 +1,4 @@
-package mini.mes.chatfile;
+package mini.mes.chatServer;
 
 import java.io.File;
 import java.io.FileInputStream;

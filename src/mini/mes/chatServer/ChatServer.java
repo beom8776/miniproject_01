@@ -30,6 +30,7 @@ public class ChatServer {
 			this.fileSendUserMap = fileSendUserMap;
 		}
 
+		
 
 		/**
 		 * 생성자

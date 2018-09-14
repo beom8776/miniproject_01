@@ -11,18 +11,21 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
 import mini.mes.chatServer.ChatClient;
  
 /**
@@ -43,12 +46,14 @@ public class ChattingGui extends JFrame{
 	 */
 	//라벨,버튼 관련
 	private JPanel		panel 		= new JPanel();
+	private JPanel		dialogPanel = new JPanel();
   
   	private JButton		profilebt	= new JButton(new ImageIcon("files/image/profil.jpg"));		//프로파일 버튼
   	private JButton		addtalker	= new JButton(new ImageIcon("files/image/addtalker.jpg"));	//대화상대 추가  	
 	private JButton		noticebt	= new JButton("공지사항");		//공지사항 라벨
-	private JTextArea	area 		= new JTextArea();			//대화 출력창
-	private JScrollPane	areascroll 	= new JScrollPane(area);	//대화 출력창 스크롤
+//	private JTextArea	area 		= new JTextArea();			//대화 출력창
+	private JLabel		dialogLabel;
+	private JScrollPane	areascroll 	= new JScrollPane(dialogPanel,  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);	//대화 출력창 스크롤
 	private JTextField	inputField 	= new JTextField();			//대화 입력창
 	private JButton		sendBt 		= new JButton(new ImageIcon("files/image/sendbt.jpg"));		//입력대화 전송 버튼
 	private JButton		emoticonBt 	= new JButton(new ImageIcon("files/image/emoticon.jpg"));		//이모티콘
@@ -72,9 +77,9 @@ public class ChattingGui extends JFrame{
 	private JMenuItem	exit			= new JMenuItem("종료");		//프로그램 종료
 
 	private ImageIcon[] icon = new ImageIcon[10];					//이모티콘 메뉴의 하위메뉴에 들어가는 이미지배열
-	private String[]	emoticonTitle = {"lion1","lion2","lion3",
-			"lion4","lion5","mugi1",
-			"mugi2","mugi3","mugi4","sinanda"};						//이모티콘 메뉴의 하위메뉴 타이틀
+	private String[]	emoticonTitle = {"[lion1]","[lion2]","[lion3]",
+			"[lion4]","[lion5]","[mugi1]",
+			"[mugi2]","[mugi3]","[mugi4]","[sinan]"};						//이모티콘 메뉴의 하위메뉴 타이틀
 	private Font		f1 = new Font("", Font.BOLD, 10);	//10사이즈 글씨 폰트
 	private Font		f2 = new Font("", Font.BOLD, 20);	//20사이즈 글씨 폰트
 	
@@ -87,13 +92,15 @@ public class ChattingGui extends JFrame{
 	private String[] 	friendname;		//친구 이름 배열
 	private String[] 	friendid;		//친구 아이디 배열
 	
+	
 	/**
 	 * Dialog 인스턴스 선언
 	 */
-	EmoticonDialog	emoticonClick;	//이모티콘다이얼로그
-	NoticeDialog	noticeClick;	//공지사항다이얼로그
-	AddTalkerDialog	addTalkerClick; //대화상대추가다이얼로그
-	DialogueCapture	captureClick;	//화면캡쳐
+	EmoticonDialog	emoticonClick;		//이모티콘다이얼로그
+	DialogueCapture	captureClick;		//화면캡쳐
+	ProfileDialog	profileClick;		//프로필다이얼로그
+	AddTalkerDialog	addTalkerClick; 	//대화상대추가다이얼로그
+	NoticeDialog	noticeClick;		//공지사항다이얼로그
 	
 	//채팅 메시지 관련
 	private boolean flag = false;
@@ -150,6 +157,7 @@ public class ChattingGui extends JFrame{
 		noticebt.setBounds(130, 10, 343, 50);
 		panel.add(noticebt);
 		areascroll.setBounds(12, 70, 460, 500);
+		dialogPanel.setLayout(new BoxLayout(dialogPanel, BoxLayout.Y_AXIS));
 		panel.add(areascroll);
 		inputField.setBounds(12, 580, 390, 28);
 		panel.add(inputField);
@@ -160,7 +168,6 @@ public class ChattingGui extends JFrame{
 		fileSendBt.setBounds(81, 618, 57, 40);
 		panel.add(fileSendBt);
 		
-		area.setEditable(false);
 	}
 	/**
 	 * 이모티콘 메뉴의 하위메뉴에 이미지와 타이틀 삽입하여 생성   
@@ -174,6 +181,7 @@ public class ChattingGui extends JFrame{
 			img1 = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);		//기존 이미지를 축소
 			newIcon = new ImageIcon(img1);									//축소한 이미지를 새로운 ImageIcon 인스턴스 생성
 			emoticonItem[i] = new JMenuItem(emoticonTitle[i], newIcon);
+		
 		}
 	}
 	/**
@@ -227,12 +235,17 @@ public class ChattingGui extends JFrame{
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				if ( exitConfirm == 0 ) {
+					System.exit(0);
 					dispose();
 				}
 			}
 		};
 		this.addWindowListener(w);
 		
+		profilebt.addActionListener(e->{
+			profileClick = new ProfileDialog(this);
+			profileClick.showDialog();
+		});
 		/**
 		 * 대화창 상단, 대화상대 추가 버튼을 누르면 친구목록다이얼로그 생성
 		 */
@@ -298,7 +311,11 @@ public class ChattingGui extends JFrame{
 			}
 		};
 		inputField.addKeyListener(enter);
-		
+		//입력테스트용
+//		inputField.addActionListener(e->{
+//			String str = inputField.getText();
+//			textAppend(str);
+//		});
 		
 		/**
 		 * 파일 전송 버튼 이벤트
@@ -316,8 +333,8 @@ public class ChattingGui extends JFrame{
 			
 			int x = this.getX()+21;
 			int y = this.getY()+125;
-			int x1 = area.getWidth();
-			int y1 = area.getHeight();
+			int x1 = dialogPanel.getWidth();
+			int y1 = dialogPanel.getHeight();
 			
 			captureClick.areaCapture(x, y, x1, y1);
 		});
@@ -355,8 +372,8 @@ public class ChattingGui extends JFrame{
 	 * 불러온 채팅 로그를 채팅창에 입력 하는 메소드
 	 */
 	public void receiveLog(StringBuffer sb) {
-		this.area.setText(sb.toString());
-		area.setCaretPosition(area.getDocument().getLength());
+//		this.area.setText(sb.toString());
+		textAppend(sb.toString());
 	}
 	
 	
@@ -367,7 +384,6 @@ public class ChattingGui extends JFrame{
 		String text =this.inputField.getText();
 		client.send(text);
 		inputField.setText("");
-		area.setCaretPosition(area.getDocument().getLength());
 	}
 
 	
@@ -377,8 +393,7 @@ public class ChattingGui extends JFrame{
 	 * @param text 상대가 보낸 메시지
 	 */
 	public void systemMessage(String text) {
-		area.append("[시스템] : " + text + "\n");
-		area.setCaretPosition(area.getDocument().getLength());
+		textAppend("[시스템] : " + text + "\n");
 	}
 	
 	
@@ -388,12 +403,19 @@ public class ChattingGui extends JFrame{
 	 * @param text 상대가 보낸 메시지
 	 */
 	public void inputChat(String userID, String text) {
-		area.append("[" + userID + "] : " + text + "\n");
+		textAppend("[" + userID + "] : " + text + "\n");
 	}
 
+	/**
+	 * 상대의 채팅을 화면에 출력하는 메소드
+	 * @param 상대가 보낸 메시지
+	 */
+	public void groupChat(String text) {
+		textAppend("[그룹] : " + text + "\n");
+	}
 	
 	/**
-	 * EmoticonDialog 클래스에서 선택된 이모티콘을 String으로 받는 메소드 
+	 * 선택된 이모티콘의 문자열을 입력창에 추가하는 메소드 
 	 * @param emoticonsend
 	 */
 	public void emoticonRecive(String emoticonsend) {
@@ -401,7 +423,7 @@ public class ChattingGui extends JFrame{
 	}
 	
 	/**
-	 * 현재 대화상대 추가 가능한 인원을 리턴해준다.
+	 * 전체 친구 인원에서 대화중인 인원을 뺀 숫자를 리턴해준다.
 	 * @param totalfriends
 	 * @param talkers
 	 * @return
@@ -441,6 +463,18 @@ public class ChattingGui extends JFrame{
 	}
 
 	/**
+	 * 입력한 text를 라벨에 받아서 대화창에 생성한다. 
+	 * @param text
+	 */
+	public void textAppend(String text) {
+		dialogLabel = new JLabel(text);
+		dialogPanel.add(dialogLabel);
+		revalidate();
+		repaint();
+		areascroll.getVerticalScrollBar().setValue(areascroll.getVerticalScrollBar().getMaximum());
+	}
+	
+	/**
 	 * 테스트용 메인 메소드
 	 */
 //	 public static void main(String[] args) {
@@ -449,7 +483,5 @@ public class ChattingGui extends JFrame{
 //		 chat.setVisible(true);
 //		
 //	}
-
-
 
 }

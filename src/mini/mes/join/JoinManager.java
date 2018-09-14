@@ -10,10 +10,10 @@ import javax.swing.*;
 /**
  * 회원 가입 기능을 띄우는 데 가장 밑바탕이 되는 class
  * @author 강정호
- *
  */
 
-class JoinWindow extends JFrame {
+
+public class JoinManager extends JFrame{
 	private JoinField jf = new JoinField();
 	private CalendarBox cb = new CalendarBox();
 	
@@ -36,6 +36,34 @@ class JoinWindow extends JFrame {
 	private JButton btn0 = new JButton("가　입");
 	private JButton btn1 = new JButton("지우기");
 	
+	private String kind = null;	// Server에 어떤 처리 작업을 할것인지 지정해주는 변수
+	private Socket socket;
+	private ObjectOutputStream oos;
+	
+	
+	public JoinManager(Socket socket, ObjectOutputStream oos) {
+		this.display();
+		this.event();
+		this.setTitle("회원 가입을 위해 빈칸을 채워 주세요.");
+		this.setSize(450,600);
+		this.setResizable(false);
+		this.setVisible(true);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (dim.width/2)-(400/2);
+		int y = (dim.height/2)-(800/2);
+		this.setLocation(x, y);
+		
+		this.socket = socket; 
+		try {
+			this.oos = oos;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("출력스트림 오류");
+		}
+	}
+	
+  
 	public void display() {
 		con.setLayout(null);
 		setContentPane(con);
@@ -120,8 +148,11 @@ class JoinWindow extends JFrame {
 			}
 		};
 		this.addWindowListener(listen);
+
 		
-		//회원 가입 ButtonButton Event
+		/**
+		 * 회원가입 버튼 이벤트
+		 */
 		btn0.addActionListener(e -> {
 			Member mb = new Member();
 			boolean flag = false;
@@ -141,6 +172,26 @@ class JoinWindow extends JFrame {
 			mb.setBirth(cb.appendBirth());
 			System.out.println(mb.toString());
 			
+			System.out.println();
+			
+			/**
+			 * Server에 회원정보 전송
+			 */
+			try {
+				kind = "회원가입";
+				oos.writeUTF(kind);
+				oos.flush();
+				
+				oos.writeObject(mb);
+				oos.flush();
+				oos.close();
+				
+				JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다");
+				this.setVisible(false);
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			
 		});
 		
@@ -174,20 +225,6 @@ class JoinWindow extends JFrame {
 		});
 	}
 	
-	public JoinWindow() {
-		this.display();
-		this.event();
-		this.setTitle("회원 가입을 위해 빈칸을 채워 주세요.");
-		this.setSize(450,600);
-		this.setLocation(200, 200);
-		this.setResizable(false);
-		this.setVisible(true);
-	}
-	
 }
 
-public class JoinManager {
-	public static void main(String[] args) {
-		JoinWindow jw = new JoinWindow();
-	}
-}
+
