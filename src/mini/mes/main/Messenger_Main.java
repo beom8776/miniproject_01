@@ -5,7 +5,6 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,13 +15,15 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import mini.mes.chatServer.Board;
 import mini.mes.join.JoinManager;
+import mini.mes.join.Member;
+
 
 /**
- * 로그인 화면에서 메인 화면으로 연결
- * @author 김현진, 최범석
+ * 메인 클래스
+ * @author 김현진
  *
  */
-class Windows_Login extends JFrame{
+public class Messenger_Main extends JFrame {
 	
 //	컴포넌트를 배치할 영역을 JPanel로 구현
 	private JPanel con = new JPanel();
@@ -36,7 +37,7 @@ class Windows_Login extends JFrame{
 	private ObjectInputStream objectIn;
 	private Socket socket;
 	
-	public Windows_Login() {
+	public Messenger_Main() {
 		this.display();
 		this.event();
 		
@@ -56,12 +57,13 @@ class Windows_Login extends JFrame{
 								+ "." + Long.parseLong(segments[1]) 
 								+ "."	+ Long.parseLong(segments[2])
 								+ "." + Long.parseLong(segments[3]));
+			
 			socket = new Socket(serverIP,  Board.SUB_PORTNUMBER);
 			System.out.println("socket : ["+socket+"]");
-			objectIn = new ObjectInputStream(socket.getInputStream());
-			System.out.println("objectIn : ["+objectIn+"]");
 			objectOut = new ObjectOutputStream(socket.getOutputStream());
 			System.out.println("objectOut : ["+objectOut+"]");
+			objectIn = new ObjectInputStream(socket.getInputStream());
+			System.out.println("objectIn : ["+objectIn+"]");
 
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -108,6 +110,11 @@ class Windows_Login extends JFrame{
 			this.receiveInfo();
 		});
 		
+		
+		/**
+		 * 회원가입 버튼 이벤트
+		 * 회원가입을 실행
+		 */
 		btJoin.addActionListener(e->{
 			this.openJoin();
 		});
@@ -115,16 +122,7 @@ class Windows_Login extends JFrame{
 	
 	
 	public void openJoin() {
-		try {
-//		String kind = "회원가입";
-//		objectOut.writeUTF(kind);
-//		objectOut.flush();
-//		System.out.println("objectOut.write : ["+kind+"]");//테스트코드
-		
-		JoinManager join = new JoinManager(this.socket, this.objectOut);
-		} catch (Exception e1) {
-			
-		}
+		JoinManager join = new JoinManager(this);
 	}
 	
 	
@@ -170,20 +168,27 @@ class Windows_Login extends JFrame{
 		
 	}
 	
-}
+	
+	public void sendJoin(Member mb) {
+		try {
+			String kind = "회원가입";
+			objectOut.writeUTF(kind);
+			objectOut.flush();
+			
+			objectOut.writeObject(mb);
+			objectOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-
-
-/**
- * 메인 클래스
- * @author 김현진
- *
- */
-public class Messenger_Main {
-	public static void main(String[] args) {	
-		Windows_Login login = new Windows_Login();
-//		Messenger_m login = new Messenger_m();
 	}
+	
+	
+	public static void main(String[] args) {	
+		Messenger_Main login = new Messenger_Main();
+	}
+
+
 }
 
 
