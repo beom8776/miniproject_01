@@ -1,9 +1,11 @@
 package mini.mes.memberServer;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import mini.mes.chatServer.Board;
+import mini.mes.chatServer.ChatServerManager;
 
 /**
  * 회원관리 서버
@@ -11,35 +13,40 @@ import mini.mes.chatServer.Board;
  */
 
 public class MemberManageServer {
+	
+	private ServerSocket serverSocket = null;
+	private Socket socket = null;
+	int port = Board.SUB_PORTNUMBER;
+	
+	public  MemberManageServer() {
+		try {
+			this.serverSocket = new ServerSocket(port);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("소켓생성오류");
+		}
+	}
+	
+	public void work() {
+		try {
+		while(true) {
+			System.out.println("[서버] 수신 대기중... ok");
+			socket = serverSocket.accept();
+			MemberManager manager = new MemberManager(this, socket);
+			manager.setDaemon(true);
+			manager.start();
+			Thread.sleep(50L);
+			
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("[서버] 클라이언트 접속 실패");
+		}
+	}
+	
+	//실행용 메인
 	public static void main(String[] args) {
-		
-		/**
-		 * 서버 연결 준비
-		 */
-		ServerSocket server = null;
-		Socket socket = null;
-		int searchPort = Board.SUB_PORTNUMBER;
-//		String kind = null;
-		
-			try {
-				
-				/**
-				 * Server와 Client간의 연결
-				 */
-				server = new ServerSocket(searchPort);
-				System.out.println("(Server)현재상태 : [접속대기] --- 1");
-				System.out.println("(Server)현재내용 : ["+server+"] --- 1");
-				socket = server.accept();
-				System.out.println("(Server)현재상태 : [접속완료] --- 2");
-				System.out.println("(Server)현재내용 : ["+socket+"] --- 2");
-				System.out.println();
-				
-				MemberManager members  = new MemberManager(socket);
-				members.setDaemon(true);
-				members.run();
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		MemberManageServer server = new MemberManageServer();
+		server.work();
 	}
 }

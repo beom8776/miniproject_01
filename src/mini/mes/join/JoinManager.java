@@ -1,11 +1,24 @@
 package mini.mes.join;
 
-import java.awt.event.*;
-import mini.mes.join.Member;
-import java.io.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import mini.mes.main.Messenger_Main;
 
 /**
  * 회원 가입 기능을 띄우는 데 가장 밑바탕이 되는 class
@@ -39,9 +52,9 @@ public class JoinManager extends JFrame{
 	private String kind = null;	// Server에 어떤 처리 작업을 할것인지 지정해주는 변수
 	private Socket socket;
 	private ObjectOutputStream oos;
+	private Messenger_Main main;
 	
-	
-	public JoinManager(Socket socket, ObjectOutputStream oos) {
+	public JoinManager(Messenger_Main main) {
 		this.display();
 		this.event();
 		this.setTitle("회원 가입을 위해 빈칸을 채워 주세요.");
@@ -54,13 +67,7 @@ public class JoinManager extends JFrame{
 		int y = (dim.height/2)-(800/2);
 		this.setLocation(x, y);
 		
-		this.socket = socket; 
-		try {
-			this.oos = oos;
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("출력스트림 오류");
-		}
+		this.main = main;
 	}
 	
   
@@ -155,16 +162,11 @@ public class JoinManager extends JFrame{
 		 */
 		btn0.addActionListener(e -> {
 			Member mb = new Member();
-			boolean flag = false;
-			cb.event();
-			if(jf.event() == true) {
-				dispose();
-//				System.out.println();
-//				Socket socket = null;
-//				JoinMemberManager jmm = new JoinMemberManager(socket);
-//				jmm.create();
-			}
-			
+//			boolean flag = false;
+//			cb.event();
+//			if(jf.event() == true) {
+//
+//			}
 			mb.setId(jf.tfId.getText());
 			mb.setPw(jf.pwf.getText());
 			mb.setName(jf.tfName.getText());
@@ -172,27 +174,12 @@ public class JoinManager extends JFrame{
 			mb.setBirth(cb.appendBirth());
 			System.out.println(mb.toString());
 			
-			System.out.println();
+			main.sendJoin(mb);
 			
-			/**
-			 * Server에 회원정보 전송
-			 */
-			try {
-				kind = "회원가입";
-				oos.writeUTF(kind);
-				oos.flush();
+			dispose();
+			JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다");
+
 				
-				oos.writeObject(mb);
-				oos.flush();
-				oos.close();
-				
-				JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다");
-				this.setVisible(false);
-				
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			
 		});
 		
 		//지우기 Button Event(쓰여진 내용 모두 지우기)

@@ -23,75 +23,75 @@ public class MemberManager extends Thread implements Serializable{
 	private Member mb;
 	private String result = null;
 	private String str = null;
-	String kind = null;
+	private MemberManageServer server;
 	
-	public MemberManager(Socket socket) {
+	
+	public MemberManager(MemberManageServer server, Socket socket) {
+
+		this.server = server;
+		this.socket = socket;
 		try {
-			this.socket = socket;
-			this.objectOut  = new ObjectOutputStream(socket.getOutputStream());
-			this.objectIn = new ObjectInputStream(socket.getInputStream());
+		this.objectOut  = new ObjectOutputStream(socket.getOutputStream());
+		this.objectIn = new ObjectInputStream(socket.getInputStream());
 		}catch(Exception e) {
 			System.out.println("스트림 설정 오류");
 		}
 
 	}
+	
+	
 	public void run() {
-		while(true) {
-			try {
-				kind = objectIn.readUTF();
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println("메시지 수신 오류");
-			}
-			System.out.println("kind : ["+kind+"]");
+		try {
+			while(true) {
+				String kind = objectIn.readUTF();
+				System.out.println("kind : ["+kind+"]");
+				/**
+				 * 회원DB 생성 작업
+				 */
+				if(kind.equals("회원가입")) {
+					this.create();
+				}
+				
+				/**
+				 * Client에서 ID검색을 요청하여 확인 후 결과 값을 반환해 주는 작업
+				 */
+				else if(kind.equals("친구찾기")) {
+					this.start();
+				}
 			
-			/**
-			 * 회원DB 생성 작업
-			 */
-			if(kind.equals("회원가입")) {
-				this.create();
-			}
+				/**
+				 * 나의정보 - 상태메시지 업데이트
+				 */
+				else if(kind.equals("상태메시지")) {
+					this.myment();
+				}
+				
+				/**
+				 * 나의정보 - 이미지 업데이트
+				 */
+				else if(kind.equals("이미지")) {
+					this.image();
+				}
+				
+				/**
+				 * 친구검색 후 친구추가시 나의DB에 추가
+				 */
+				else if(kind.equals("친구추가")) {
+					this.addFriend();
+				}
 			
-			/**
-			 * Client에서 ID검색을 요청하여 확인 후 결과 값을 반환해 주는 작업
-			 */
-			else if(kind.equals("친구찾기")) {
-				this.start();
-			}
-			
-			/**
-			 * 나의정보 - 상태메시지 업데이트
-			 */
-			else if(kind.equals("상태메시지")) {
-				this.myment();
-			}
-			
-			/**
-			 * 나의정보 - 이미지 업데이트
-			 */
-			else if(kind.equals("이미지")) {
-				this.image();
-			}
-			
-			/**
-			 * 친구검색 후 친구추가시 나의DB에 추가
-			 */
-			else if(kind.equals("친구추가")) {
-				this.addFriend();
-			}
-			
-			/**
-			 * 로그인 요청시 확
-			 */
-			else if(kind.equals("로그인")) {
-				this.login();
-			}
-			try {
-				Thread.sleep(2000L);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				/**
+				 * 로그인 요청시 확
+				 */
+				else if(kind.equals("로그인")) {
+					this.login();
+				}
+					
+				Thread.sleep(2000L);	
+				} 
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("메시지 수신 오류");
 		}
 		
 	}
@@ -171,17 +171,16 @@ public class MemberManager extends Thread implements Serializable{
 		try {
 			mb = (Member)objectIn.readObject();
 			System.out.println("현재상태 : [데이터 받기 완료 --- 3]");
-//			File target = new File("D:\\Java\\db\\membersDB\\"+mb.getId() + ".db");
 			System.out.println("현재상태 : [mb.getid() = "+mb.getId()+" --- 3]");
 			File target = new File(System.getProperty("user.dir")+"\\membersDB\\"+mb.getId()+".db");
+			System.out.println(target.getAbsolutePath());
 			target.createNewFile();
 			System.out.println("현재상태 : [파일 생성 --- 5]");
-			objectOut = new ObjectOutputStream(
+			ObjectOutputStream fileOut = new ObjectOutputStream(
 					new BufferedOutputStream(new FileOutputStream(target)));
 			System.out.println("objectOut : ["+objectOut+"]");//테스트코드
-			objectOut.writeObject(mb);
-			objectOut.flush();
-			objectOut = new ObjectOutputStream(socket.getOutputStream());
+			fileOut.writeObject(mb);
+			fileOut.flush();
 		} catch (Exception e) {e.printStackTrace();}
 	}
 	
@@ -272,16 +271,28 @@ public class MemberManager extends Thread implements Serializable{
 			System.out.println("받은 아이디 : " + str);
 			String pw = objectIn.readUTF();
 			System.out.println("받은 비밀번호 : " + pw);
-			String path = System.getProperty("user.dir")+"\\membersDB\\Test01\\"+str+".db";
+			String path = System.getProperty("user.dir")+"\\membersDB\\"+str+".db";
 			System.out.println("path : " + path);
 			File file = new File(path);
 			
 			if(file.exists()) {
+				ObjectInputStream fileIn = new ObjectInputStream(
+						new BufferedInputStream(new FileInputStream(file)));
+				Member mb = (Member) fileIn.readObject();
 				System.out.println(str + "유저의 DB정보 : " + file);
-				System.out.println("파일이 존재하여 로그인 완료 메시지를 전송");
-				String result = "로그인 완료";
-				objectOut.writeUTF(result);
-				objectOut.flush();
+				System.out.println("파일이 존재하여 비밀번호를 검사");
+				if(mb.getPw().equals(pw)) {
+					String result = "로그인 완료";
+					objectOut.writeUTF(result);
+					objectOut.flush();
+				}
+				else {
+					System.out.println("비밀번호가 일치하지 않으므로 결과없음 메시지를 전송");
+					String result = "결과없음";
+					objectOut.writeUTF(result);
+					objectOut.flush();
+				}
+					
 			}
 			else {
 				System.out.println("파일이 존재하지 않으므로 결과없음 메시지를 전송");
@@ -296,7 +307,6 @@ public class MemberManager extends Thread implements Serializable{
 			}
 	}
 }
-
 
 
 
