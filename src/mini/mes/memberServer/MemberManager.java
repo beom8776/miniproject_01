@@ -58,14 +58,14 @@ public class MemberManager extends Thread implements Serializable{
 				else if(kind.equals("친구찾기")) {
 					this.start();
 				}
-			
+				
 				/**
 				 * 나의정보 - 상태메시지 업데이트
 				 */
 				else if(kind.equals("상태메시지")) {
 					this.myment();
 				}
-				
+			
 				/**
 				 * 나의정보 - 이미지 업데이트
 				 */
@@ -79,21 +79,18 @@ public class MemberManager extends Thread implements Serializable{
 				else if(kind.equals("친구추가")) {
 					this.addFriend();
 				}
-			
+				
 				/**
 				 * 로그인 요청시 확
 				 */
 				else if(kind.equals("로그인")) {
 					this.login();
 				}
-					
-				Thread.sleep(2000L);	
-				} 
-		}catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("메시지 수신 오류");
+					Thread.sleep(2000L);
+			}
+		}catch(Exception e) {
+			
 		}
-		
 	}
 	
 	
@@ -172,6 +169,10 @@ public class MemberManager extends Thread implements Serializable{
 			mb = (Member)objectIn.readObject();
 			System.out.println("현재상태 : [데이터 받기 완료 --- 3]");
 			System.out.println("현재상태 : [mb.getid() = "+mb.getId()+" --- 3]");
+			File folder = new File(System.getProperty("user.dir")+"\\membersDB");
+			if(!folder.exists()) {
+				folder.mkdir();
+			}
 			File target = new File(System.getProperty("user.dir")+"\\membersDB\\"+mb.getId()+".db");
 			System.out.println(target.getAbsolutePath());
 			target.createNewFile();
