@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -141,39 +142,53 @@ class Window_Login extends JFrame{
 		 * 회원DB에서 정보확인 요청 후 일치할 경우 Main 화면 출력
 		 */
 		btLogin.addActionListener(e->{
-//			ObjectOutputStream objectOut = null;
-//			ObjectInputStream objectIn = null;
-//			Socket socket;
-//			String kind = null;
-//			
+			ObjectOutputStream objectOut = null;
+			ObjectInputStream objectIn = null;
+			Socket socket;
+			String kind = null;
+			
 			try {
-//				socket = new Socket("localhost", 10001);
-//				System.out.println("socket : ["+socket+"]");
-//				objectOut = new ObjectOutputStream(socket.getOutputStream());
-//				System.out.println("objectOut : ["+objectOut+"]");
-//				String str=null;
-//				System.out.println("str : ["+str+"]");
-//				kind = "로그인";
-//				System.out.println("kind : ["+kind+"]");
-//				objectOut.writeObject(kind);
-//				System.out.println("objectOut.write : ["+objectOut+"]");
-//				objectOut.flush();
-//				
-//				objectOut.writeObject);
-//				System.out.println("objectOut.write : ["+objectOut+"]");
-//				objectOut.flush();
-//				
-//				
-//				objectIn = new ObjectInputStream(socket.getInputStream());
-//				System.out.println("objectIn : ["+objectIn+"]");
-//					str = (String)objectIn.readObject();
-//					System.out.println("str : ["+str+"]");
+				socket = new Socket("localhost", 10001);
+
+				objectOut = new ObjectOutputStream(socket.getOutputStream());
+				System.out.println("objectOut : ["+objectOut+"]");
+				objectIn = new ObjectInputStream(socket.getInputStream());
+				System.out.println("objectIn : ["+objectIn+"]");
 				
-				String str = "Test00";
+
+				String str=null;
+				System.out.println("str : ["+str+"]");
+				kind = "로그인";
+				System.out.println("kind : ["+kind+"]");
+				objectOut.writeObject(kind);
+				System.out.println("objectOut.write : ["+objectOut+"]");
+				objectOut.flush();
+				
+				objectOut.writeObject(idFiled.getText());
+				System.out.println("objectOut.write : ["+objectOut+"]");
+				objectOut.flush();
+				
+				
+
+
+					str = (String)objectIn.readObject();
+					System.out.println("str : ["+str+"]");
+				
+//				String str = "Test00";
 			
 					if(str.equals(idFiled.getText())) {
 						
+						/**
+						 * 나의 정보를 불러올 작업할 것
+						 */
 						Messenger_m java_Messenger = new Messenger_m();
+						
+						kind = "데이터 호출";
+						objectOut.writeObject(kind);
+						objectOut.flush();
+						
+						
+						
 						this.dispose();
 					}
 					else {
@@ -185,6 +200,8 @@ class Window_Login extends JFrame{
 		btJoin.addActionListener(e->{
 			String[] args = null;
 			JoinManager.main(args);
+			this.setVisible(false);
+			
 		});
 	}
 }
