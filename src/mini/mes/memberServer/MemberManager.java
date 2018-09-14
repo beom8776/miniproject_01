@@ -36,8 +36,10 @@ public class MemberManager extends Thread implements Serializable{
 
 	}
 	public void run() {
-		while(true) {
+//		while(true) {
 			try {
+				objectOut = new ObjectOutputStream(socket.getOutputStream());
+				System.out.println("objectOut : ["+objectOut+"]");//테스트코드
 				kind = objectIn.readUTF();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -89,10 +91,9 @@ public class MemberManager extends Thread implements Serializable{
 			try {
 				Thread.sleep(2000L);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+//		}
 		
 	}
 	
@@ -171,8 +172,11 @@ public class MemberManager extends Thread implements Serializable{
 		try {
 			mb = (Member)objectIn.readObject();
 			System.out.println("현재상태 : [데이터 받기 완료 --- 3]");
-//			File target = new File("D:\\Java\\db\\membersDB\\"+mb.getId() + ".db");
 			System.out.println("현재상태 : [mb.getid() = "+mb.getId()+" --- 3]");
+			File folder = new File(System.getProperty("user.dir")+"\\membersDB");
+			if(!folder.exists()) {
+				folder.mkdir();
+			}
 			File target = new File(System.getProperty("user.dir")+"\\membersDB\\"+mb.getId()+".db");
 			target.createNewFile();
 			System.out.println("현재상태 : [파일 생성 --- 5]");
@@ -181,7 +185,6 @@ public class MemberManager extends Thread implements Serializable{
 			System.out.println("objectOut : ["+objectOut+"]");//테스트코드
 			objectOut.writeObject(mb);
 			objectOut.flush();
-			objectOut = new ObjectOutputStream(socket.getOutputStream());
 		} catch (Exception e) {e.printStackTrace();}
 	}
 	
