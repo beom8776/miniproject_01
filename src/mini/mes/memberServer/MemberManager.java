@@ -7,7 +7,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -86,7 +85,6 @@ public class MemberManager extends Thread implements Serializable{
 				else if(kind.equals("로그인")) {
 					this.login();
 				}
-					Thread.sleep(2000L);
 			}
 		}catch(Exception e) {
 			
