@@ -1,15 +1,17 @@
 package mini.mes.join;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+
 import java.awt.event.*;
+import mini.mes.join.Member;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.*;
 
 import javax.swing.*;
 
-import mini.mes.chatServer.Board;
+/**
+ * 회원 가입 기능을 띄우는 데 가장 밑바탕이 되는 class
+ * @author 강정호
+ */
+
 
 public class JoinManager extends JFrame{
 	private JoinField jf = new JoinField();
@@ -61,7 +63,7 @@ public class JoinManager extends JFrame{
 		}
 	}
 	
-	
+  
 	public void display() {
 		con.setLayout(null);
 		setContentPane(con);
@@ -126,10 +128,9 @@ public class JoinManager extends JFrame{
 		con.add(btn1);
 	}
 	
+	
 	public void event() {
-		/**
-		 * 종료 이벤트
-		 */
+		//나가기 Event
 		WindowListener listen = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -153,11 +154,16 @@ public class JoinManager extends JFrame{
 		 * 회원가입 버튼 이벤트
 		 */
 		btn0.addActionListener(e -> {
-			
 			Member mb = new Member();
 			boolean flag = false;
-			jf.event();
 			cb.event();
+			if(jf.event() == true) {
+				dispose();
+//				System.out.println();
+//				Socket socket = null;
+//				JoinMemberManager jmm = new JoinMemberManager(socket);
+//				jmm.create();
+			}
 			
 			mb.setId(jf.tfId.getText());
 			mb.setPw(jf.pwf.getText());
@@ -187,17 +193,9 @@ public class JoinManager extends JFrame{
 				e1.printStackTrace();
 			}
 			
-			
-//			try {
-//				mb.save();
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//			}
 		});
 		
-		/**
-		 * 지우기 버튼 이벤트 (작성된 내용 전체 지우기)
-		 */
+		//지우기 Button Event(쓰여진 내용 모두 지우기)
 		btn1.addActionListener(e -> {
 			jf.tfId.setText("");
 			jf.pwf.setText("");
@@ -206,7 +204,7 @@ public class JoinManager extends JFrame{
 			jf.tfPhone3.setText("");
 		});
 		
-		//전화 번호는 숫자 4개까지만 입력
+		//전화번호 2번째 입력란은 숫자 4개까지만 입력
 		jf.tfPhone2.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -216,7 +214,7 @@ public class JoinManager extends JFrame{
 			}
 		});
 		
-		//전화 번호는 숫자 4개까지만 입력
+		//전화번호 3번째 입력란은 숫자 4개까지만 입력
 		jf.tfPhone3.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
