@@ -467,11 +467,26 @@ public class ChattingGui extends JFrame{
 	 * @param text
 	 */
 	public void textAppend(String text) {
-		dialogLabel = new JLabel(text);
-		dialogPanel.add(dialogLabel);
-		revalidate();
-		repaint();
-		areascroll.getVerticalScrollBar().setValue(areascroll.getVerticalScrollBar().getMaximum());
+		int x = 0;
+		for (int i = 0; i < emoticonTitle.length; i++) {
+			
+			if(text.indexOf(emoticonTitle[i]) != -1) {
+				System.out.println("포함되어 있음 :"+text.indexOf(emoticonTitle[i]));
+				dialogLabel = new JLabel(icon[i]);
+				dialogPanel.add(dialogLabel);
+				revalidate();
+				repaint();
+				areascroll.getVerticalScrollBar().setValue(areascroll.getVerticalScrollBar().getMaximum());
+				x = 1;
+			}
+		}
+		if(x == 0){
+			dialogLabel = new JLabel(text);
+			dialogPanel.add(dialogLabel);
+			revalidate();
+			repaint();
+			areascroll.getVerticalScrollBar().setValue(areascroll.getVerticalScrollBar().getMaximum());
+		}
 	}
 	
 	/**
